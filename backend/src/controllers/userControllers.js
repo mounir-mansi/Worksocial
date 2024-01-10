@@ -14,6 +14,8 @@ const login = (req, res) => {
     });
 };
 
+
+
 const browse = (req, res) => {
   models.user
     .findAll()
