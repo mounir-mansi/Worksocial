@@ -35,7 +35,16 @@ const verifyPassword = async (req, res) => {
       const token = jwt.sign(payload, process.env.JWT_SECRET, {
         expiresIn: "4h",
       });
-      res.status(200).send({ token, message: "Login successful" });
+      // res.cookie("token", token, {
+      //   httpOnly: true,
+      //   maxAge: 4 * 60 * 60 * 1000,
+      // });
+      console.info(req.user.Username);
+      res.status(200).send({
+        authToken: token,
+        user: req.user,
+        message: "Login successful",
+      });
     } else {
       res.status(401).send("Incorrect password");
     }

@@ -1,0 +1,36 @@
+.user-card {
+  border: 1px solid #ccc;
+  padding: 15px;
+  margin: 10px;
+  width: calc(15% - 40px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+
+.user-card img {
+  width: 100%;
+  height: auto;
+}
+
+.user-info {
+  margin-top: 10px;
+  text-align: center;
+}
+
+@media (max-width: 1024px) {
+  .user-card {
+    width: calc(22.333% - 40px); /* 3 cartes par ligne sur tablettes */
+  }
+}
+
+@media (max-width: 768px) {
+  .user-card {
+    width: calc(50% - 40px); /* 2 cartes par ligne sur mobiles */
+  }
+}
+
+@media (max-width: 480px) {
+  .user-card {
+    width: 100%; /* 1 carte par ligne sur très petits écrans */
+  }
+}

@@ -15,8 +15,8 @@ class EventManager extends AbstractManager {
   insert(event, userID) {
     return this.database.query(
       `
-      INSERT INTO ${this.table} 
-      (Event_ID, Image, EventName, StartDate, EndDate, StartTime, EndTime, Description, Visibility, ParticipantCount, User_ID) 
+      INSERT INTO ${this.table}
+      (Event_ID, Image, EventName, StartDate, EndDate, StartTime, EndTime, Description, Visibility, ParticipantCount, User_ID)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `,
       [

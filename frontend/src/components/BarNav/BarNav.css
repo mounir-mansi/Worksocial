@@ -1,18 +1,81 @@
-/* Barnav */
+/* BarNav.css */
 
 .BarNav {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: aquamarine;
+  background-color: #4a4e69;
+  padding: 0 20px;
 }
+
 .navbar_logo {
-  height: 80px;
+  height: 60px;
 }
+
 .NavLinks {
   display: flex;
   flex-direction: row;
   list-style: none;
-  gap: 1rem;
+  gap: 20px;
   margin: 0;
+}
+
+.NavLinks li a {
+  color: white;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.NavLinks li a:hover {
+  color: #9b4110;
+}
+
+.NavLinks button {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  transition: color 0.3s ease;
+  font-size: 18px;
+}
+
+.NavLinks button:hover {
+  color: #f2e9e4;
+}
+
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  padding: 20px;
+  z-index: 1000;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.modal-content {
+  text-align: center;
+}
+
+.modal-content p {
+  margin-bottom: 20px;
+  font-size: 18px;
+  color: #333;
+}
+
+.modal-content button {
+  background-color: #4a4e69;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  margin: 0 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.modal-content button:hover {
+  background-color: #22223b;
 }

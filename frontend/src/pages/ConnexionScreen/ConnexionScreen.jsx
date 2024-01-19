@@ -1,62 +1,56 @@
 import React, { useState } from "react";
-import axios from "axios";
 import "./ConnexionScreen.css";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../utils/useConnecte";
 
 console.info();
 function ConnexionScreen() {
   // React States
   const [errorMessages, setErrorMessages] = useState({});
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const auth = useAuth();
+  const navigate = useNavigate();
 
-  // Fonction pour gérer la soumission du formulaire
   const handleSubmit = async (event) => {
     event.preventDefault();
-
     const { mail, pass } = event.target.elements;
     const emailValue = mail.value;
     const passwordValue = pass.value;
 
     try {
-      const response = await axios.post(
-        "http://localhost:5000/login",
-        {
+      const response = await fetch("http://localhost:5000/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
           Email: emailValue,
           Password: passwordValue,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+        }),
+      });
 
-      console.info("Réponse du serveur:", response.data);
+      const data = await response.json();
+      console.info("Réponse du serveur:", data);
 
-      // Attendre la résolution de la promesse avant de traiter la réponse
-      if (response.status === 200) {
-        if (response.data.emailNotFound) {
-          // L'email n'a pas été trouvé dans la base de données
-          setErrorMessages({ name: "mail", message: "Email non trouvé" });
-        } else {
-          // Mettre à jour l'état en cas de connexion réussie
-          setIsSubmitted(true);
-        }
+      if (response.ok) {
+        const { authToken, user } = data;
+        localStorage.setItem("userToken", authToken);
+        localStorage.setItem("userId", user.User_ID);
+        localStorage.setItem("username", user.Username);
+
+        auth.login(authToken, user.User_ID);
+        localStorage.setItem("user", JSON.stringify(user));
+        console.info("user", user);
+        setIsSubmitted(true);
+        navigate("/HomeScreen");
       } else {
-        console.error("Erreur lors de la requête. Statut:", response.status);
-        setErrorMessages({ name: "pass", message: "Mot de Passe Invalide" });
+        setErrorMessages({
+          name: "pass",
+          message: data.message || "Erreur de connexion",
+        });
       }
     } catch (error) {
       console.error("Erreur lors de la connexion:", error);
-      if (error.response) {
-        console.error("Réponse du serveur:", error.response.data);
-        if (error.response.data.emailNotFound) {
-          setErrorMessages({ name: "mail", message: "Email non trouvé" });
-        } else {
-          setErrorMessages({ name: "pass", message: "Mot de Passe Invalide" });
-        }
-      } else {
-        setErrorMessages({ name: "pass", message: "Mot de Passe Invalide" });
-      }
     }
   };
 
@@ -69,7 +63,7 @@ function ConnexionScreen() {
     <div className="form-container">
       <form onSubmit={handleSubmit} className="connexion-form">
         <div className="form-group">
-          <label htmlFor="mail">E-Mail</label>
+          <label htmlFor="mail">eMail</label>
           <input type="email" id="mail" name="mail" required />
           {renderErrorMessage("mail")}
         </div>

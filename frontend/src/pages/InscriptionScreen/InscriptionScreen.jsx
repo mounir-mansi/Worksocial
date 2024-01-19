@@ -17,6 +17,7 @@ function InscriptionScreen() {
     address: "",
     email: "",
     password: "",
+    passwordConfirmation: "",
     gender: "",
     phone: "",
     biography: "",
@@ -30,7 +31,15 @@ function InscriptionScreen() {
     birthDate: Yup.date().required("Date de naissance requise"),
     address: Yup.string().required("Adresse requise"),
     email: Yup.string().email("Email invalide").required("Email requis"),
-    password: Yup.string().required("Mot de passe requis"),
+    password: Yup.string()
+      .min(6, "Le mot de passe doit avoir au moins 6 caractères")
+      .required("Mot de passe requis"),
+    passwordConfirmation: Yup.string()
+      .oneOf(
+        [Yup.ref("password"), null],
+        "Les mots de passe doivent correspondre"
+      )
+      .required("La confirmation du mot de passe est requise"),
     gender: Yup.string().required("Genre requis"),
     phone: Yup.string().required("Téléphone requis"),
     biography: Yup.string().required("Biographie requise"),
@@ -85,6 +94,11 @@ function InscriptionScreen() {
     formData.append("Gender", gender);
     formData.append("Phone", phone);
     formData.append("Biography", biography);
+    if (values.password !== values.passwordConfirmation) {
+      // Affichez un message d'erreur ou effectuez une action appropriée
+      console.error("Les mots de passe ne correspondent pas");
+      return;
+    }
     if (ProfileImage && ProfileImage instanceof File) {
       formData.append("ProfileImage", ProfileImage);
     }
@@ -194,6 +208,17 @@ function InscriptionScreen() {
               <label htmlFor="password">Mot de Passe</label>
               <Field name="password" type="password" />
               <ErrorMessage name="password" component="div" className="error" />
+            </div>
+            <div className="form-group">
+              <label htmlFor="passwordConfirmation">
+                Confirmer le Mot de Passe
+              </label>
+              <Field name="passwordConfirmation" type="password" />
+              <ErrorMessage
+                name="passwordConfirmation"
+                component="div"
+                className="error"
+              />
             </div>
             <div className="form-group">
               <label htmlFor="gender">Genre</label>

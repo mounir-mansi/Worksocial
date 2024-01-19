@@ -1,0 +1,19 @@
+.home-screen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+}
+
+.home-screen-content {
+  width: 100%;
+  max-width: 1200px;
+  margin: auto;
+}
+
+.user-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 10px;
+}
