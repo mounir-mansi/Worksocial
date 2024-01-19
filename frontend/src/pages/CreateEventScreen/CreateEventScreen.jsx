@@ -34,7 +34,7 @@ function CreateEvent() {
   // Fonction de soumission du formulaire
   const handleSubmit = async (values) => {
     // Gérer la logique de soumission du formulaire ici
-    console.log("Formulaire soumis avec les valeurs :", values);
+    console.info("Formulaire soumis avec les valeurs :", values);
     // Ajouter la logique pour envoyer les données au serveur ou effectuer d'autres actions
 
     // Redirection vers une autre page
