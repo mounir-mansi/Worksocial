@@ -1,4 +1,7 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+
+import CreateEvent from "@pages/CreateEventScreen/CreateEventScreen";
+
 import BarNav from "./components/BarNav/BarNav";
 
 import HomeScreen from "./pages/HomeScreen/HomeScreen";
@@ -24,6 +27,7 @@ function App() {
         <Route path="/EventsScreen" element={<EventsScreen />} />
         <Route path="/SendageScreen" element={<SendageScreen />} />
         <Route path="/DeconnexionScreen" element={<DeconnexionScreen />} />
+        <Route path="/CreateEventScreen" element={<CreateEvent />} />
       </Routes>
     </Router>
   );
