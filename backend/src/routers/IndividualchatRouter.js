@@ -14,6 +14,11 @@ router.get(
   "/individualchats/:individualchatID",
   individualchatController.getIndividualchat
 );
+router.get(
+  "/individualchats/user/:userId",
+  individualchatController.getAllChatsForUser
+);
+
 router.post("/individualchats", individualchatController.createIndividualchat);
 router.put(
   "/individualchats/:individualchatID",

@@ -13,7 +13,6 @@ const pool = mysql.createPool({
   password: DB_PASSWORD,
   database: DB_NAME,
 });
-
 // try a connection
 
 pool.getConnection().catch(() => {

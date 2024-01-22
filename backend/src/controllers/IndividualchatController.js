@@ -12,6 +12,19 @@ const browse = (req, res) => {
     });
 };
 
+const getAllChatsForUser = (req, res) => {
+  models.individualchat
+    .findAllByUserId(req.params.userId)
+    .then(([rows]) => {
+      console.info("Résultats de la base de données:", rows);
+      res.send(rows);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.sendStatus(500);
+    });
+};
+
 const getIndividualchat = (req, res) => {
   models.individualchat
     .findByIndividualchatId(req.params.individualchatID)
@@ -33,12 +46,16 @@ const createIndividualchat = (req, res) => {
 
   models.individualchat
     .insert(individualchat)
-    .then(([result]) => {
-      res.location(`/individualchats/${result.insertId}`).sendStatus(201);
+    .then((result) => {
+      const { insertId } = result; // Obtention de l'ID inséré
+      res.status(201).json({
+        message: "Message créé avec succès",
+        chatId: insertId,
+      });
     })
     .catch((err) => {
       console.error(err);
-      res.sendStatus(500);
+      res.status(500).json({ error: "Erreur interne du serveur" });
     });
 };
 
@@ -78,6 +95,7 @@ const update = (req, res) => {
 
 module.exports = {
   browse,
+  getAllChatsForUser,
   getIndividualchat,
   createIndividualchat,
   deleteIndividualchat,

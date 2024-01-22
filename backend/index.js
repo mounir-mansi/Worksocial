@@ -1,14 +1,18 @@
 require("dotenv").config();
 
+const http = require("http");
 const app = require("./src/app");
+const { setupWebSocketServer } = require("./src/websocket/websocket");
 
-const port = parseInt(process.env.APP_PORT ?? "5000", 10);
+// HTTP server setup
+const server = http.createServer(app);
 
-app.listen(port, (err) => {
-  if (err) {
-    console.error("Something bad happened");
-  } else {
-    // eslint-disable-next-line no-restricted-syntax
-    console.log(`Server is listening on ${port}`);
-  }
+// WebSocket server setup
+setupWebSocketServer(server);
+
+// Port for HTTP server
+const port = process.env.PORT || 5000;
+
+server.listen(port, () => {
+  console.info(`HTTP server running on http://localhost:${port}`);
 });

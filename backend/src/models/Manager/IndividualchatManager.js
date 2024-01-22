@@ -12,21 +12,29 @@ class IndividualchatManager extends AbstractManager {
     );
   }
 
+  findAllByUserId(userId) {
+    return this.database.query(
+      `SELECT * FROM ${this.table} WHERE User_ID1 = ? OR User_ID2 = ?`,
+      [userId, userId]
+    );
+  }
+
+  // Dans IndividualchatManager.js
   insert(individualchat) {
+    if (
+      !individualchat.Content ||
+      !individualchat.User_ID1 ||
+      !individualchat.User_ID2
+    ) {
+      throw new Error("Missing required fields");
+    }
+
     return this.database.query(
       `
-      INSERT INTO ${this.table} 
-      (Chat_ID, Content, Created_At, Updated_At, User_ID1, User_ID2) 
-      VALUES (?, ?, ?, ?, ?, ?)
-      `,
-      [
-        individualchat.Chat_ID,
-        individualchat.Content,
-        individualchat.Created_At,
-        individualchat.Updated_At,
-        individualchat.User_ID1,
-        individualchat.User_ID2,
-      ]
+    INSERT INTO ${this.table} (Content, User_ID1, User_ID2)
+    VALUES (?, ?, ?);
+    `,
+      [individualchat.Content, individualchat.User_ID1, individualchat.User_ID2]
     );
   }
 

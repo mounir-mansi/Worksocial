@@ -1,0 +1,4 @@
+.chat-modal.minimized {
+  height: 50px; /* ou autre hauteur pour le mode minimisé */
+  overflow: hidden;
+}

@@ -8,7 +8,7 @@ function BarNav() {
   const [showModal, setShowModal] = useState(false);
   const { isLoggedIn, logout } = useAuth();
   const navigate = useNavigate();
-
+  const firstName = isLoggedIn ? localStorage.getItem("firstName") : "Visiteur";
   // Déclaration de handleCloseModal avant son utilisation
   const handleCloseModal = () => {
     setShowModal(false);
@@ -55,8 +55,8 @@ function BarNav() {
       <div className="Logo">
         <img src={Logo} alt="logo" className="navbar_logo" />
       </div>
-
       <ul className="NavLinks">
+        <li className="welcome-message">Bonjour {firstName}</li>
         <li>
           <Link to="/HomeScreen">Accueil</Link>
         </li>
