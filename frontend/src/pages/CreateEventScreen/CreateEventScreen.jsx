@@ -4,6 +4,23 @@ import * as Yup from "yup";
 import { useAuth } from "../../utils/useConnecte";
 
 function CreateEvent() {
+  // Fonction pour formater la date au format YYYY-MM-DD
+  const formatDateString = (dateString) => {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+
+  // Fonction pour formater l'heure au format hh:mm:ss
+  const formatTimeString = (timeString) => {
+    const time = new Date(`1970-01-01T${timeString}`);
+    const hours = String(time.getUTCHours()).padStart(2, "0");
+    const minutes = String(time.getUTCMinutes()).padStart(2, "0");
+    const seconds = String(time.getUTCSeconds()).padStart(2, "0");
+    return `${hours}:${minutes}:${seconds}`;
+  };
   const { user, getUserId } = useAuth();
   // Utilisez le hook useFormik pour gérer le formulaire
   const formik = useFormik({
@@ -20,7 +37,6 @@ function CreateEvent() {
       ParticipantCount: 0, // définir la valeur par défaut
     },
     validationSchema: Yup.object({
-      Image: Yup.string().required("Champ requis"),
       EventName: Yup.string().required("Champ requis"),
       StartDate: Yup.date().required("Champ requis"),
       EndDate: Yup.date().required("Champ requis"),
@@ -28,31 +44,22 @@ function CreateEvent() {
       EndTime: Yup.string().required("Champ requis"),
       Description: Yup.string().required("Champ requis"),
       Visibility: Yup.string().required("Champ requis"),
-      ParticipantCount: Yup.number().required("Champ requis"),
     }),
+
     onSubmit: (values) => {
-      const userId = getUserId();
-      const dataToSend = { ...values, User_ID: userId };
-      // envoyer dataToSend au backend
-      console.info("Données à envoyer au backend:", dataToSend);
+      const dataToSend = {
+        ...values,
+        StartDate: formatDateString(values.StartDate),
+        EndDate: formatDateString(values.EndDate),
+        StartTime: formatTimeString(values.StartTime),
+        EndTime: formatTimeString(values.EndTime),
+      };
+      console.info("Données à envoyer au backend :", dataToSend);
     },
   });
 
   return (
     <form onSubmit={formik.handleSubmit}>
-      <label htmlFor="Image">Image:</label>
-      <input
-        type="text"
-        id="Image"
-        name="Image"
-        onChange={formik.handleChange}
-        onBlur={formik.handleBlur}
-        value={formik.values.Image}
-      />
-      {formik.touched.Image && formik.errors.Image ? (
-        <div>{formik.errors.Image}</div>
-      ) : null}
-
       <label htmlFor="EventName">Nom de l'événement:</label>
       <input
         type="text"
