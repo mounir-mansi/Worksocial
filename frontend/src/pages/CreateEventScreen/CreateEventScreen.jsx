@@ -1,107 +1,152 @@
 import React from "react";
-import { Formik, Form, Field } from "formik";
+import { useFormik } from "formik";
 import * as Yup from "yup";
-import { useNavigate } from "react-router-dom";
-
-import "./CreateEventScreen.css";
+import { useAuth } from "../../utils/useConnecte";
 
 function CreateEvent() {
-  const navigate = useNavigate();
-
-  // Initialisation des valeurs par défaut du formulaire
-  const initialValues = {
-    Image: null,
-    EventName: "",
-    StartDate: "",
-    EndDate: "",
-    StartTime: "",
-    EndTime: "",
-    Description: "",
-    Visibility: "",
-  };
-
-  // Schéma de validation avec Yup
-  const validationSchema = Yup.object().shape({
-    Image: Yup.mixed().required("Image requise"),
-    EventName: Yup.string().required("Nom de l'événement requis"),
-    StartDate: Yup.date().required("Date de commencement requise"),
-    EndDate: Yup.date().required("Date de fin requise"),
-    StartTime: Yup.string().required("Heure de commencement requise"),
-    EndTime: Yup.string().required("Heure de fin requise"),
-    Description: Yup.string().required("Description requise"),
+  const { user, getUserId } = useAuth();
+  // Utilisez le hook useFormik pour gérer le formulaire
+  const formik = useFormik({
+    initialValues: {
+      User_ID: user ? getUserId() : null,
+      Image: "",
+      EventName: "",
+      StartDate: "",
+      EndDate: "",
+      StartTime: "",
+      EndTime: "",
+      Description: "",
+      Visibility: "Public", // définir la valeur par défaut
+      ParticipantCount: 0, // définir la valeur par défaut
+    },
+    validationSchema: Yup.object({
+      Image: Yup.string().required("Champ requis"),
+      EventName: Yup.string().required("Champ requis"),
+      StartDate: Yup.date().required("Champ requis"),
+      EndDate: Yup.date().required("Champ requis"),
+      StartTime: Yup.string().required("Champ requis"),
+      EndTime: Yup.string().required("Champ requis"),
+      Description: Yup.string().required("Champ requis"),
+      Visibility: Yup.string().required("Champ requis"),
+      ParticipantCount: Yup.number().required("Champ requis"),
+    }),
+    onSubmit: (values) => {
+      const userId = getUserId();
+      const dataToSend = { ...values, User_ID: userId };
+      // envoyer dataToSend au backend
+      console.info("Données à envoyer au backend:", dataToSend);
+    },
   });
 
-  // Fonction de soumission du formulaire
-  const handleSubmit = async (values) => {
-    // Gérer la logique de soumission du formulaire ici
-    console.info("Formulaire soumis avec les valeurs :", values);
-    // Ajouter la logique pour envoyer les données au serveur ou effectuer d'autres actions
-
-    // Redirection vers une autre page
-    navigate("/success"); // Modifier la route selon vos besoins
-  };
-
   return (
-    <div className="inscription-screen">
-      <Formik
-        initialValues={initialValues}
-        validationSchema={validationSchema}
-        onSubmit={handleSubmit}
+    <form onSubmit={formik.handleSubmit}>
+      <label htmlFor="Image">Image:</label>
+      <input
+        type="text"
+        id="Image"
+        name="Image"
+        onChange={formik.handleChange}
+        onBlur={formik.handleBlur}
+        value={formik.values.Image}
+      />
+      {formik.touched.Image && formik.errors.Image ? (
+        <div>{formik.errors.Image}</div>
+      ) : null}
+
+      <label htmlFor="EventName">Nom de l'événement:</label>
+      <input
+        type="text"
+        id="EventName"
+        name="EventName"
+        onChange={formik.handleChange}
+        onBlur={formik.handleBlur}
+        value={formik.values.EventName}
+      />
+      {formik.touched.EventName && formik.errors.EventName ? (
+        <div>{formik.errors.EventName}</div>
+      ) : null}
+
+      <label htmlFor="StartDate">Date de début:</label>
+      <input
+        type="date"
+        id="StartDate"
+        name="StartDate"
+        onChange={formik.handleChange}
+        onBlur={formik.handleBlur}
+        value={formik.values.StartDate}
+      />
+      {formik.touched.StartDate && formik.errors.StartDate ? (
+        <div>{formik.errors.StartDate}</div>
+      ) : null}
+
+      <label htmlFor="EndDate">Date de fin:</label>
+      <input
+        type="date"
+        id="EndDate"
+        name="EndDate"
+        onChange={formik.handleChange}
+        onBlur={formik.handleBlur}
+        value={formik.values.EndDate}
+      />
+      {formik.touched.EndDate && formik.errors.EndDate ? (
+        <div>{formik.errors.EndDate}</div>
+      ) : null}
+
+      <label htmlFor="StartTime">Heure de début:</label>
+      <input
+        type="time"
+        id="StartTime"
+        name="StartTime"
+        onChange={formik.handleChange}
+        onBlur={formik.handleBlur}
+        value={formik.values.StartTime}
+      />
+      {formik.touched.StartTime && formik.errors.StartTime ? (
+        <div>{formik.errors.StartTime}</div>
+      ) : null}
+
+      <label htmlFor="EndTime">Heure de fin:</label>
+      <input
+        type="time"
+        id="EndTime"
+        name="EndTime"
+        onChange={formik.handleChange}
+        onBlur={formik.handleBlur}
+        value={formik.values.EndTime}
+      />
+      {formik.touched.EndTime && formik.errors.EndTime ? (
+        <div>{formik.errors.EndTime}</div>
+      ) : null}
+
+      <label htmlFor="Description">Description:</label>
+      <textarea
+        id="Description"
+        name="Description"
+        onChange={formik.handleChange}
+        onBlur={formik.handleBlur}
+        value={formik.values.Description}
+      />
+      {formik.touched.Description && formik.errors.Description ? (
+        <div>{formik.errors.Description}</div>
+      ) : null}
+
+      <label htmlFor="Visibility">Visibilité:</label>
+      <select
+        id="Visibility"
+        name="Visibility"
+        onChange={formik.handleChange}
+        onBlur={formik.handleBlur}
+        value={formik.values.Visibility}
       >
-        {({ setFieldValue }) => (
-          <Form>
-            <h2>Créer un Événement</h2>
-            <div className="form-group">
-              <label htmlFor="EventName">Event Name</label>
-              <Field name="EventName" type="text" />
-            </div>
+        <option value="Public">Public</option>
+        <option value="Private">Privé</option>
+      </select>
+      {formik.touched.Visibility && formik.errors.Visibility ? (
+        <div>{formik.errors.Visibility}</div>
+      ) : null}
 
-            <div className="form-group">
-              <label htmlFor="StartDate">Start Date</label>
-              <Field name="StartDate" type="date" />
-              <label htmlFor="EndDate">End Date</label>
-              <Field name="EndDate" type="date" />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="Description">Description Event</label>
-              <Field name="Description" as="textarea" />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="StartTime">Start Time</label>
-              <Field name="StartTime" type="time" />
-              <label htmlFor="EndTime">End Time</label>
-              <Field name="EndTime" type="time" />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="Visibility">
-                Qui peut Participer à l'évenement ?
-              </label>
-              <Field name="Visibility" as="select">
-                <option value="all">all</option>
-                <option value="friends">friends</option>
-              </Field>
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="Image">Image</label>
-              <input
-                id="Image"
-                name="Image"
-                type="file"
-                onChange={(event) =>
-                  setFieldValue("ProfileImage", event.currentTarget.files[0])
-                }
-              />
-            </div>
-
-            <button type="submit">Valider</button>
-          </Form>
-        )}
-      </Formik>
-    </div>
+      <button type="submit">Envoyer</button>
+    </form>
   );
 }
 
