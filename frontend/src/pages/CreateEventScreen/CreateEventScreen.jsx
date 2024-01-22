@@ -50,7 +50,7 @@ function CreateEvent() {
       >
         {({ setFieldValue }) => (
           <Form>
-            <h2>Création d'un Événement</h2>
+            <h2>Créer un Événement</h2>
             <div className="form-group">
               <label htmlFor="EventName">Event Name</label>
               <Field name="EventName" type="text" />
