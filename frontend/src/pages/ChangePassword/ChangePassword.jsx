@@ -67,10 +67,10 @@ function ChangePassword() {
       .min(6, "Le mot de passe doit avoir au moins 6 caractères")
       .required("Mot de passe requis"),
     confirmNewPassword: Yup.string()
-      // .oneOf(
-      //   [Yup.ref("newPassword"), null],
-      //   "Les mots de passe doivent correspondre"
-      // )
+      .oneOf(
+        [Yup.ref("newPassword"), null],
+        "Les mots de passe doivent correspondre"
+      )
       .required("La confirmation du mot de passe est requise"),
   });
 

@@ -90,6 +90,15 @@ class userManager extends AbstractManager {
     ]);
   }
 
+  resetPassword(hashedPassword, Email) {
+    return this.database.query(
+      `UPDATE ${this.table} SET 
+      hashedPassword = ?
+      WHERE Email = ?`,
+      [hashedPassword, Email]
+    );
+  }
+
   checkUsernameAvailability(username) {
     return this.database
       .query(`SELECT COUNT(*) AS count FROM ${this.table} WHERE Username = ?`, [

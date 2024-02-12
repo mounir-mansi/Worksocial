@@ -3,7 +3,6 @@ import "./ConnexionScreen.css";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../utils/useConnecte";
 
-console.info();
 function ConnexionScreen() {
   // React States
   const [errorMessages, setErrorMessages] = useState({});
@@ -72,6 +71,7 @@ function ConnexionScreen() {
           <input type="password" id="pass" name="pass" required />
           {renderErrorMessage("pass")}
         </div>
+        <a href="/verify-user">Mot de passe oublie ?</a>
         <button type="submit" className="submit-button">
           Soumettre
         </button>

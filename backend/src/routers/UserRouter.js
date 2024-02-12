@@ -44,6 +44,11 @@ router.post(
   userControllers.getUserByEmailWithPasswordAndPassToNext,
   verifyPassword
 );
+
+// Verify Email
+router.post("/verify-user", userControllers.getUserByEmail);
+router.post("/verify-key", userControllers.verifyKey);
+router.post("/reset-password", hashPassword, userControllers.resetPassword);
 // Login
 router.post("/login", userControllers.login, verifyPassword);
 

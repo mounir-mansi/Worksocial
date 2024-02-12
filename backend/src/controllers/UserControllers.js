@@ -1,3 +1,4 @@
+const crypto = require("crypto");
 const { sendEmail } = require("../../utils/emailSender");
 const models = require("../models");
 const { generateVerificationCode } = require("../../utils/helperFunctions");
@@ -151,6 +152,82 @@ const logout = async (req, res) => {
   }
 };
 
+const getUserByEmail = async (req, res) => {
+  const { Email } = req.body;
+  console.info(Email);
+  try {
+    const user = await models.user.findUserByEmail(Email);
+    if (user != null) {
+      const uniqueKey = crypto.randomBytes(32).toString("hex");
+      res.status(200).send({ uniqueKey, Email });
+      models.resetPasswordKey.addKey(uniqueKey, Email);
+      const emailUser = await sendEmail({
+        to: "nyukeit@outlook.com",
+        subject: "Re-initialiser votre Mot de Passe",
+        text: `Bonjour, vous avez demandez la re-initialisation de votre mot de passe. Veuillez cliquer sur ce lien pour changer votre mot de passe : http://localhost:5173/resetpassword/${uniqueKey}`,
+        html: `Bonjour, vous avez demandez la re-initialisation de votre mot de passe. Veuillez cliquer sur ce lien pour changer votre mot de passe : http://localhost:5173/resetpassword/${uniqueKey}`,
+      });
+      if (emailUser) {
+        console.info("Email sent");
+      } else {
+        console.info("Email not sent");
+      }
+    } else {
+      res.status(404).send("User not found");
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error retrieving data from database");
+  }
+};
+
+const verifyKey = async (req, res) => {
+  const { key } = req.body;
+  console.info(key);
+  const [result] = await models.resetPasswordKey.getResetPasswordKey(key);
+  if (result[0].unique_key === key) {
+    const currentTime = new Date();
+    const expirationTime = new Date(result[0].expires_at);
+    let keyExpired = false;
+    try {
+      if (currentTime > expirationTime) {
+        keyExpired = true;
+        res.status(400).send(keyExpired);
+      }
+    } catch (err) {
+      console.error(err);
+      res.sendStatus(500);
+    }
+  }
+};
+
+const resetPassword = async (req, res) => {
+  const { hashedPassword, key } = req.body;
+  console.info(hashedPassword, key);
+  if (!key) {
+    res.sendStatus(400);
+    return;
+  }
+  await models.resetPasswordKey.getResetPasswordKey(key).then(([result]) => {
+    if (result[0].unique_key === key) {
+      try {
+        models.user
+          .resetPassword(hashedPassword, result[0].Email)
+          .then(([r]) => {
+            if (r.affectedRows === 0) {
+              res.sendStatus(404);
+            } else {
+              res.sendStatus(204);
+            }
+          });
+      } catch (err) {
+        console.error(err);
+        res.sendStatus(500);
+      }
+    }
+  });
+};
+
 const getUserByEmailWithPasswordAndPassToNext = (req, res, next) => {
   const email = req.body;
   models.user
@@ -278,4 +355,7 @@ module.exports = {
   verifyPhoneAvailability,
   requestEmailVerification,
   verifyEmailCode,
+  getUserByEmail,
+  resetPassword,
+  verifyKey,
 };

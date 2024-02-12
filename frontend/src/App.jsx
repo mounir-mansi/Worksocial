@@ -15,6 +15,8 @@ import MembersScreen from "./pages/MembersScreen/MembersScreen";
 import ChangePassword from "./pages/ChangePassword/ChangePassword";
 import EditUserProfilScreen from "./pages/EditUserProfilScreen/EditUserProfilScreen";
 import MyUserProfilScreen from "./pages/MyUserProfilScreen/MyUserProfilScreen";
+import ResetPassword from "./pages/ResetPassword/ResetPassword";
+import VerifyUser from "./pages/VerifyUser/VerifyUser";
 
 // Import des Contexts
 import { AuthProvider } from "./utils/useConnecte";
@@ -67,6 +69,9 @@ function App() {
               <Route path="/myprofil" element={<MyUserProfilScreen />} />
               <Route path="/editprofil" element={<EditUserProfilScreen />} />
               <Route path="/changepassword" element={<ChangePassword />} />
+              <Route path="/verify-user" element={<VerifyUser />} />
+              <Route path="/resetpassword/:key" element={<ResetPassword />} />
+              <Route path="/resetpassword" element={<ResetPassword />} />
             </Routes>
           </UserProvider>
         </Router>
