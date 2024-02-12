@@ -98,14 +98,6 @@ const TokenBlacklistManager = require("./Manager/TokenBlacklistManager");
 models.tokenBlacklist = new TokenBlacklistManager();
 models.tokenBlacklist.setDatabase(pool);
 
-const CompanyUserManager = require("./Manager/CompanyUserManager");
-
-models.company_user = new CompanyUserManager();
-models.company_user.setDatabase(pool);
-const CompaniesManager = require("./Manager/CompaniesManager");
-
-models.company = new CompaniesManager();
-models.company.setDatabase(pool);
 const ResetPasswordKeyManager = require("./Manager/ResetPasswordKeyManager");
 
 models.resetPasswordKey = new ResetPasswordKeyManager();
@@ -119,6 +111,7 @@ const CompaniesManager = require("./Manager/CompaniesManager");
 
 models.company = new CompaniesManager();
 models.company.setDatabase(pool);
+
 // bonus: use a proxy to personalize error message,
 // when asking for a non existing model
 
