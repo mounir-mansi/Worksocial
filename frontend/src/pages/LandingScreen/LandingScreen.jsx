@@ -23,7 +23,7 @@ export default function LandingScreen() {
           WorkSocial est le meilleur moyen de trouver des pairs et des collègues
           travaillant dans n'importe quelle entreprise.
         </p>
-        <a className="hero-button" href="/InscriptionScreen">
+        <a className="hero-button" onClick={() => { window.location.href = "/inscription"; }}>
           Commencez Gratuitement
         </a>
         <img src={heroImage} alt="Hero" id="hero-image" />
