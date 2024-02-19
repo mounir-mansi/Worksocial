@@ -24,7 +24,7 @@ export default function LandingScreen() {
           travaillant dans n'importe quelle entreprise.
         </p>
         <a className="hero-button" href="/inscription">
-          Commencez Gratuite
+          Commencez Gratuitement
         </a>
         <img src={heroImage} alt="Hero" id="hero-image" />
       </section>
