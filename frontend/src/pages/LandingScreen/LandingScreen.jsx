@@ -91,7 +91,7 @@ export default function LandingScreen() {
           </Col>
         </Row>
         <a className="hero-button" href="/inscription">
-          Commencez Gratuite
+          Commencez Gratuitement
         </a>
       </section>
       <footer>
