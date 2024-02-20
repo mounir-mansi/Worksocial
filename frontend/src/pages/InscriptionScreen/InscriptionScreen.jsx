@@ -123,7 +123,7 @@ function InscriptionScreen() {
     formData.append("Biography", biography);
     formData.append("Company_Id", company);
 
-    console.info(FormData);
+    console.info(formData);
     if (values.password !== values.passwordConfirmation) {
       // Affichez un message d'erreur ou effectuez une action appropriée
       console.error("Les mots de passe ne correspondent pas");
