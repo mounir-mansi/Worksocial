@@ -93,6 +93,7 @@ const updatePassword = async (req, res) => {
 
 const createUser = (req, res) => {
   const user = req.body;
+  console.info(user);
 
   // Ajouter le chemin de l'image de profil à l'objet user si une image est téléchargée
   if (req.file) {
