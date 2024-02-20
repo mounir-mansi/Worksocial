@@ -14,11 +14,16 @@ const app = express();
 app.use(express.json());
 
 const cors = require("cors");
+const corsOptions = {
+  origin: 'http://localhost:5000&#39;,
+  credentials: false,
+  optionSuccessStatus: 200
+}
 
 app.use(cors());
 app.use("/upload", express.static(path.join(__dirname, "../assets/upload")));
 
-app.use(cors());
+app.use(cors(corsOptions));
 // app.use(express.urlencoded({ extended: true }));
 // import and mount the API routes
 
