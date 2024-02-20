@@ -131,7 +131,22 @@ function InscriptionScreen() {
       return;
     }
     if (ProfileImage && ProfileImage instanceof File) {
-      formData.append("ProfileImage", ProfileImage);
+      const profileData = {
+      Username: username,
+      LastName: lastName,
+      FirstName: firstName,
+      BirthDate: birthDate,
+      Age: age.toString(),
+      Address: address,
+      Email: email,
+      Password: password,
+      Role: "User",
+      Gender: gender,
+      Phone: phone,
+      Biography: biography,
+      Company_Id: company,
+      ProfileImage: ProfileImage // ProfileImage doit être une variable contenant les données de l'image
+    };
       console.info("aaaa", formData);
     }
     try {
