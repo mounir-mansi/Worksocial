@@ -131,8 +131,8 @@ function InscriptionScreen() {
       return;
     }
     if (ProfileImage && ProfileImage instanceof File) {
-      console.info("aaaa", formData);
       formData.append("ProfileImage", ProfileImage);
+      console.info("aaaa", formData);
     }
     try {
       const response = await fetch("http://localhost:5000/users", {
