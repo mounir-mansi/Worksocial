@@ -108,21 +108,20 @@ function InscriptionScreen() {
       return;
     }
 
-    const formData = {
-    Username: username,
-    LastName: lastName,
-    FirstName: firstName,
-    BirthDate: birthDate,
-    Age: age.toString(),
-    Address: address,
-    Email: email,
-    Password: password,
-    Role: "User",
-    Gender: gender,
-    Phone: phone,
-    Biography: biography,
-    Company_Id: company
-    };
+    const formData = new FormData();
+    formData.append("Username", username);
+    formData.append("LastName", lastName);
+    formData.append("FirstName", firstName);
+    formData.append("BirthDate", birthDate);
+    formData.append("Age", age.toString());
+    formData.append("Address", address);
+    formData.append("Email", email);
+    formData.append("Password", password);
+    formData.append("Role", "User");
+    formData.append("Gender", gender);
+    formData.append("Phone", phone);
+    formData.append("Biography", biography);
+    formData.append("Company_Id", company);
 
     console.info(formData);
     if (values.password !== values.passwordConfirmation) {
