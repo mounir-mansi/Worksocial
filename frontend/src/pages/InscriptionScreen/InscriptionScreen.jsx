@@ -108,7 +108,7 @@ function InscriptionScreen() {
       return;
     }
 
-    const formDataObject = {
+    const formData = {
     Username: username,
     LastName: lastName,
     FirstName: firstName,
