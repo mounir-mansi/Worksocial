@@ -131,28 +131,13 @@ function InscriptionScreen() {
       return;
     }
     if (ProfileImage && ProfileImage instanceof File) {
-      const formDataWithPicture = {
-      Username: username,
-      LastName: lastName,
-      FirstName: firstName,
-      BirthDate: birthDate,
-      Age: age.toString(),
-      Address: address,
-      Email: email,
-      Password: password,
-      Role: "User",
-      Gender: gender,
-      Phone: phone,
-      Biography: biography,
-      Company_Id: company,
-      ProfileImage: ProfileImage // ProfileImage doit être une variable contenant les données de l'image
-    };
-      console.info("aaaa", formDataWithPicture);
+      formData.ProfileImage = ProfileImage;
+      console.info("aaaa", formData);
     }
     try {
       const response = await fetch("http://localhost:5000/users", {
         method: "POST",
-        body: formDataWithPicture,
+        body: formData,
       });
 
       // Check if the response is OK (status code 200-299)
