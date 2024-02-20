@@ -39,6 +39,7 @@ class userManager extends AbstractManager {
       user.ProfileImage,
       user.Company_Id,
     ];
+    console.info(values);
     return this.database.query(query, values);
   }
 
