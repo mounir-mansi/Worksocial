@@ -136,9 +136,12 @@ function InscriptionScreen() {
     }
     try {
       const response = await fetch(`${hostname}/users`, {
-        method: "POST",
-        body: formData,
-      });
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        });
 
       // Check if the response is OK (status code 200-299)
       if (response.ok) {
