@@ -130,6 +130,7 @@ function InscriptionScreen() {
       return;
     }
     if (ProfileImage && ProfileImage instanceof File) {
+      console.info('aaaa');
       formData.append("ProfileImage", ProfileImage);
     }
     try {
