@@ -131,7 +131,7 @@ function InscriptionScreen() {
       return;
     }
     if (ProfileImage && ProfileImage instanceof File) {
-      const profileData = {
+      formData = {
       Username: username,
       LastName: lastName,
       FirstName: firstName,
