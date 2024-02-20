@@ -135,7 +135,7 @@ function InscriptionScreen() {
       console.info("aaaa", formData);
     }
     try {
-      const response = await fetch("http://localhost:5000/users", {
+      const response = await fetch(`${hostname}/users`, {
         method: "POST",
         body: formData,
       });
