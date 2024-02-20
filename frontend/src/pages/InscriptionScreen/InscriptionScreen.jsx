@@ -131,7 +131,7 @@ function InscriptionScreen() {
       return;
     }
     if (ProfileImage && ProfileImage instanceof File) {
-      const formData = {
+      const formDataWithPicture = {
       Username: username,
       LastName: lastName,
       FirstName: firstName,
@@ -147,12 +147,12 @@ function InscriptionScreen() {
       Company_Id: company,
       ProfileImage: ProfileImage // ProfileImage doit être une variable contenant les données de l'image
     };
-      console.info("aaaa", formData);
+      console.info("aaaa", formDataWithPicture);
     }
     try {
       const response = await fetch("http://localhost:5000/users", {
         method: "POST",
-        body: formData,
+        body: formDataWithPicture,
       });
 
       // Check if the response is OK (status code 200-299)
