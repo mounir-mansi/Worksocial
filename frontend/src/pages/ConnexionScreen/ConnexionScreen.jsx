@@ -16,20 +16,19 @@ function ConnexionScreen() {
     const { mail, pass } = event.target.elements;
     const emailValue = mail.value;
     const passwordValue = pass.value;
-
+    const formData = {
+      "Email": emailValue,
+      "Password": passwordValue,
+    }
     try {
       const response = await fetch(`${hostname}/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          "Email": emailValue,
-          "Password": passwordValue,
-        }),
+        body: JSON.stringify(formData),
       });
-      console.info(await response.json());
-
+      
       const data = await response.json();
 
       if (response.ok) {
