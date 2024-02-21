@@ -15,7 +15,7 @@ const login = async (req, res, next) => {
         res.status(401).json({ emailNotFound: true });
       } else {
         const user = result[0];
-        console.info-"user",user);
+        console.info("user",user);
         // Pass the entire user object to auth.js for password verification
         req.user = user;
         next(); // Proceed to password verification in the auth middleware
