@@ -27,6 +27,7 @@ function ConnexionScreen() {
           "Email": emailValue,
           "Password": passwordValue,
         }),
+        console.info(body);
       });
 
       const data = await response.json();
