@@ -130,10 +130,10 @@ function InscriptionScreen() {
       console.error("Les mots de passe ne correspondent pas");
       return;
     }
-    // if (ProfileImage && ProfileImage instanceof File) {
-    //   formData.ProfileImage = ProfileImage;
-    //   console.info("aaaa", formData);
-    // }
+    if (ProfileImage && ProfileImage instanceof File) {
+      formData.("ProfileImage") = ProfileImage;
+      console.info("aaaa", formData);
+    }
     try {
       const response = await fetch(`${hostname}/users`, {
           method: "POST",
