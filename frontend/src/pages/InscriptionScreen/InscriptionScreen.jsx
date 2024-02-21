@@ -133,6 +133,8 @@ function InscriptionScreen() {
     if (ProfileImage && ProfileImage instanceof File) {
       formData["ProfileImage"] = ProfileImage;
       console.info("aaaa", formData);
+    }else{
+        formData["ProfileImage"] = null;
     }
     try {
       const response = await fetch(`${hostname}/users`, {
