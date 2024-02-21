@@ -24,8 +24,8 @@ function ConnexionScreen() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          Email: emailValue,
-          Password: passwordValue,
+          "Email": emailValue,
+          "Password": passwordValue,
         }),
       });
 
