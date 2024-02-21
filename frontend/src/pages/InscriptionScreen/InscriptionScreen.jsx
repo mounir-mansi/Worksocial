@@ -109,19 +109,19 @@ function InscriptionScreen() {
     }
 
     const formData = {
-    Username: username,
-    LastName: lastName,
-    FirstName: firstName,
-    BirthDate: birthDate,
-    Age: age.toString(),
-    Address: address,
-    Email: email,
-    Password: password,
-    Role: "User",
-    Gender: gender,
-    Phone: phone,
-    Biography: biography,
-    Company_Id: company
+    "Username": username,
+    "LastName": lastName,
+    "FirstName": firstName,
+    "BirthDate": birthDate,
+    "Age": age.toString(),
+    "Address": address,
+    "Email": email,
+    "Password": password,
+    "Role": "User",
+    "Gender": gender,
+    "Phone": phone,
+    "Biography": biography,
+    "Company_Id": company
     };
 
     console.info(formData);
@@ -131,7 +131,7 @@ function InscriptionScreen() {
       return;
     }
     if (ProfileImage && ProfileImage instanceof File) {
-      formData.ProfileImage = ProfileImage;
+      formData."ProfileImage" = ProfileImage;
       console.info("aaaa", formData);
     }
     try {
