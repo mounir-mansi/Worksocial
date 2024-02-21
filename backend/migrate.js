@@ -26,7 +26,7 @@ const migrate = async () => {
 };
 
 try {
-  migrate();
+  await migrate();
 } catch (err) {
   console.error(err);
 }
