@@ -6,11 +6,11 @@ const path = require("node:path");
 // create express app
 
 const express = require("express");
+const app = express();
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', 'https://worksocialmounir.netlify.app');
   next();
 });
-const app = express();
 
 // use some application-level middlewares
 
