@@ -19,6 +19,11 @@ app.use(cors());
 app.use("/upload", express.static(path.join(__dirname, "../assets/upload")));
 
 app.use(cors());
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', 'https://worksocialmounir.netlify.app');
+  next();
+});
+
 // app.use(express.urlencoded({ extended: true }));
 // import and mount the API routes
 
