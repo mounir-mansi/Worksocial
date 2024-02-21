@@ -131,7 +131,7 @@ function InscriptionScreen() {
       return;
     }
     if (ProfileImage && ProfileImage instanceof File) {
-      formData.('ProfileImage') = ProfileImage;
+      formData.["ProfileImage"] = ProfileImage;
       console.info("aaaa", formData);
     }
     try {
