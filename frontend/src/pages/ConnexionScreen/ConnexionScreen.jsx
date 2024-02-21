@@ -20,6 +20,7 @@ function ConnexionScreen() {
       "Email": emailValue,
       "Password": passwordValue,
     }
+    console.info(formData);
     try {
       const response = await fetch(`${hostname}/login`, {
         method: "POST",
