@@ -27,7 +27,7 @@ function ConnexionScreen() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: formData,
       });
       
       const data = await response.json();
