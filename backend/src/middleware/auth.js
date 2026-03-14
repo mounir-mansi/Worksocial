@@ -10,6 +10,7 @@ const hashingOptions = {
 };
 
 const hashPassword = async (req, res, next) => {
+  if (!req.body.Password) return next();
   try {
     const hash = await argon2.hash(req.body.Password, hashingOptions);
     req.body.hashedPassword = hash;
@@ -19,6 +20,7 @@ const hashPassword = async (req, res, next) => {
     console.error(err);
     res.sendStatus(500);
   }
+  return null;
 };
 
 const verifyPassword = async (req, res) => {
