@@ -46,9 +46,6 @@ router.get("/verify-username", userControllers.verifyUsernameAvailability);
 router.get("/verify-email", userControllers.verifyEmailAvailability);
 router.get("/verify-Phone", userControllers.verifyPhoneAvailability);
 
-// Authentication Wall - Everything after this requires an authenticated user
-router.use(verifyToken);
-
 // Get all users
 router.get("/users", verifyToken, userControllers.getUsers);
 
@@ -57,8 +54,8 @@ router.get("/users/:id", verifyToken, userControllers.getUserByID);
 
 // Update an existing user
 router.put("/users/:id", verifyOwner, hashPassword, userControllers.updateUser);
-router.put("/updatePassword/:id", hashPassword, userControllers.updatePassword);
-router.get("/logout", userControllers.logout, blacklistToken);
+router.put("/updatePassword/:id", verifyToken, hashPassword, userControllers.updatePassword);
+router.get("/logout", verifyToken, userControllers.logout, blacklistToken);
 
 // Delete a user
 router.delete("/users/:id", verifyOwner, userControllers.deleteUser);
