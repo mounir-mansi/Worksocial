@@ -234,33 +234,20 @@ export default function PostCard({ post, postLikes, postComments }) {
           <div className="card-img">
             <ImageWithJWT className="post-img" imageUrl={imageUrl[0]} />
           </div>
-          {(postLikes.length > 0 || postComments.length > 0) && (
-            <div className="card-reactions">
-              {postLikes.length > 0 && (
-                <span className="reaction-likes">
-                  <span className="reaction-likes-icon"><i className="fa-solid fa-thumbs-up" /></span>
-                  {postLikes.length}
-                </span>
-              )}
-              {postComments.length > 0 && (
-                <span className="reaction-comments" onClick={handleOpenCommentModal}>
-                  {postComments.length} commentaire{postComments.length > 1 ? "s" : ""}
-                </span>
-              )}
-            </div>
-          )}
           <div className="card-actions">
             <button
               className={`action-btn${userHasLiked ? " action-btn--liked" : ""}`}
               type="button"
               onClick={() => handlePostLikeDislike(userHasLiked ? "unlike" : "like", currentUserID)}
             >
-              <i className={`fa-${userHasLiked ? "solid" : "regular"} fa-thumbs-up`} />
+              <i className="fa-solid fa-thumbs-up" />
               <span>J&apos;aime</span>
+              {postLikes.length > 0 && <span className="action-btn-count">{postLikes.length}</span>}
             </button>
             <button className="action-btn" type="button" onClick={handleOpenCommentModal}>
-              <i className="fa-regular fa-comment" />
+              <i className="fa-solid fa-comment" />
               <span>Commenter</span>
+              {postComments.length > 0 && <span className="action-btn-count">{postComments.length}</span>}
             </button>
           </div>
           <Card.Title>{post.Title}</Card.Title>

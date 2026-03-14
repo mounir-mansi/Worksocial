@@ -325,33 +325,20 @@ export default function SurveyCard({
           <div className="card-img">
             <ImageWithJWT imageUrl={imageUrl[0]} />
           </div>
-          {(surveyLikes.length > 0 || surveyComments.length > 0) && (
-            <div className="card-reactions">
-              {surveyLikes.length > 0 && (
-                <span className="reaction-likes">
-                  <span className="reaction-likes-icon"><i className="fa-solid fa-thumbs-up" /></span>
-                  {surveyLikes.length}
-                </span>
-              )}
-              {surveyComments.length > 0 && (
-                <span className="reaction-comments" onClick={handleOpenCommentModal}>
-                  {surveyComments.length} commentaire{surveyComments.length > 1 ? "s" : ""}
-                </span>
-              )}
-            </div>
-          )}
           <div className="card-actions">
             <button
               className={`action-btn${userHasLiked ? " action-btn--liked" : ""}`}
               type="button"
               onClick={() => handleSurveyLikeDislike(userHasLiked ? "unlike" : "like", currentUserID)}
             >
-              <i className={`fa-${userHasLiked ? "solid" : "regular"} fa-thumbs-up`} />
+              <i className="fa-solid fa-thumbs-up" />
               <span>J&apos;aime</span>
+              {surveyLikes.length > 0 && <span className="action-btn-count">{surveyLikes.length}</span>}
             </button>
             <button className="action-btn" type="button" onClick={handleOpenCommentModal}>
-              <i className="fa-regular fa-comment" />
+              <i className="fa-solid fa-comment" />
               <span>Commenter</span>
+              {surveyComments.length > 0 && <span className="action-btn-count">{surveyComments.length}</span>}
             </button>
           </div>
           <h5 className="card-title">{survey.Title}</h5>
