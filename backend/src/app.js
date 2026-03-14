@@ -10,8 +10,8 @@ const helmet = require("helmet");
 
 const app = express();
 
-// Helmet — headers HTTP de sécurité (anti-XSS, anti-clickjacking, HTTPS forcé, etc.)
-app.use(helmet());
+// Helmet — headers HTTP de sécurité (CSP géré par Nginx, on le désactive ici)
+app.use(helmet({ contentSecurityPolicy: false }));
 
 app.use(express.json());
 
