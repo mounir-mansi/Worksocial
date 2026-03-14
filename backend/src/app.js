@@ -10,6 +10,9 @@ const helmet = require("helmet");
 
 const app = express();
 
+// Trust proxy — Nginx passe X-Forwarded-For, requis pour express-rate-limit
+app.set("trust proxy", 1);
+
 // Helmet — headers HTTP de sécurité (CSP géré par Nginx, on le désactive ici)
 app.use(helmet({ contentSecurityPolicy: false }));
 
