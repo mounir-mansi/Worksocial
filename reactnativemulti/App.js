@@ -9,6 +9,8 @@ import InscriptionMobileScreen from './src/pages/InscriptionWebMobil/Inscription
 import InscriptionWebScreen from './src/pages/InscriptionWebMobil/InscriptionWebScreen/InscriptionWebScreen';
 import MembersScreen from './src/pages/DrawerPages/MembersScreen/MembresScreen';
 import MyProfileScreen from './src/pages/DrawerPages/ProfileScreen/MyProfileScreen/MyProfilScreen';
+import EditProfileScreen from './src/pages/DrawerPages/ProfileScreen/EditProfileScreen';
+import CreatePostScreen from './src/pages/DrawerPages/CreatePostScreen';
 import { AuthProvider, useAuth } from "./src/utils/useConnecte";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -68,6 +70,8 @@ const AppContent = () => {
           <>
             <Stack.Screen name="Drawer" component={DrawerNavigator} options={{ headerShown: false }} />
             <Stack.Screen name="MyProfileScreen" component={MyProfileScreen} />
+            <Stack.Screen name="EditProfileScreen" component={EditProfileScreen} />
+            <Stack.Screen name="CreerPost" component={CreatePostScreen} />
             {/* Inclure InscriptionStep5 uniquement pour la plateforme mobile */}
             <Stack.Screen name="InscriptionStep5" component={InscriptionStep5} />
           </>

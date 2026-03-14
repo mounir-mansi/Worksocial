@@ -1,113 +1,73 @@
-const models = require("../models");
+const prisma = require("../lib/prisma");
+const { deleteS3Object } = require("../lib/deleteS3Object");
 
-const getPosts = (req, res) => {
-  models.post
-    .findAll()
-    .then(([rows]) => {
-      res.send(rows);
-    })
-    .catch((err) => {
-      console.error(err);
-      res.sendStatus(500);
-    });
-};
-
-const getPostById = (req, res) => {
-  models.post
-    .findByPK(req.params.id)
-    .then(([rows]) => {
-      if (rows.length === 0) {
-        res.sendStatus(404);
-      } else {
-        res.send(rows[0]);
-      }
-    })
-    .catch((err) => {
-      console.error(err);
-      res.sendStatus(500);
-    });
-};
-
-const createPost = (req, res) => {
-  const post = req.body;
-  if (req.file) {
-    post.Image = req.file.filename;
+const getPosts = async (_req, res) => {
+  try {
+    const posts = await prisma.post.findMany({ orderBy: { Created_At: "desc" } });
+    res.send(posts);
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
   }
-  const userID = req.User_ID;
-
-  models.post
-    .insert(post, userID)
-    .then(([result]) => {
-      res.location(`/posts/${result.insertId}`).sendStatus(201);
-    })
-    .catch((err) => {
-      console.error(err);
-      res.sendStatus(500);
-    });
 };
 
-const updatePost = (req, res) => {
-  const { Title, Content, Visibility } = req.body;
-  const hasNewImage = req.file !== undefined;
-  const updatedPost = {
-    Title,
-    Content,
-    Visibility,
-    Post_ID: req.params.id,
-  };
-
-  if (hasNewImage) {
-    updatedPost.Image = req.file.filename;
-    models.post
-      .update(updatedPost)
-      .then(() => {
-        res.sendStatus(204);
-      })
-      .catch((err) => {
-        console.error(err);
-        res.sendStatus(500);
-      });
-  } else {
-    models.post
-      .updateWOImage(updatedPost)
-      .then(() => {
-        res.sendStatus(204);
-      })
-      .catch((err) => {
-        console.error(err);
-        res.sendStatus(500);
-      });
+const getPostById = async (req, res) => {
+  try {
+    const post = await prisma.post.findUnique({
+      where: { Post_ID: parseInt(req.params.id, 10) },
+    });
+    if (!post) return res.sendStatus(404);
+    res.send(post);
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
   }
-
-  console.info(updatedPost);
-  //   models.post
-  //     // .update({ Title, Content, Image, Visibility, Post_ID: req.params.id })
-  //     .update(updatedPost)
-  //     .then(() => {
-  //       res.sendStatus(204);
-  //     })
-  //     .catch((err) => {
-  //       console.error(err);
-  //       res.sendStatus(500);
-  //     });
+  return null;
 };
 
-const deletePost = (req, res) => {
-  models.post
-    .delete(req.params.id)
-    .then(() => {
-      res.sendStatus(204);
-    })
-    .catch((err) => {
-      console.error(err);
-      res.sendStatus(500);
+const createPost = async (req, res) => {
+  try {
+    const { Title, Content, Visibility } = req.body;
+    const Image = req.file ? `${process.env.S3_PUBLIC_URL}/${req.file.key}` : null;
+    const post = await prisma.post.create({
+      data: { Title, Content, Visibility, Image, User_ID: req.User_ID },
     });
+    res.location(`/posts/${post.Post_ID}`).sendStatus(201);
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
 };
 
-module.exports = {
-  getPosts,
-  getPostById,
-  createPost,
-  updatePost,
-  deletePost,
+const updatePost = async (req, res) => {
+  try {
+    const id = parseInt(req.params.id, 10);
+    const { Title, Content, Visibility } = req.body;
+    const data = { Title, Content, Visibility };
+    if (req.file) {
+      const old = await prisma.post.findUnique({ where: { Post_ID: id }, select: { Image: true } });
+      if (old?.Image) await deleteS3Object(old.Image);
+      data.Image = `${process.env.S3_PUBLIC_URL}/${req.file.key}`;
+    }
+    await prisma.post.update({ where: { Post_ID: id }, data });
+    res.sendStatus(204);
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
 };
+
+const deletePost = async (req, res) => {
+  try {
+    const id = parseInt(req.params.id, 10);
+    const post = await prisma.post.findUnique({ where: { Post_ID: id }, select: { Image: true } });
+    await prisma.post.delete({ where: { Post_ID: id } });
+    if (post?.Image) await deleteS3Object(post.Image);
+    res.sendStatus(204);
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
+};
+
+module.exports = { getPosts, getPostById, createPost, updatePost, deletePost };

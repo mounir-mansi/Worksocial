@@ -4,6 +4,7 @@ import Logo from "../../assets/images/logo.png";
 import { useAuth } from "../../utils/useConnecte";
 import "./BarNav.css";
 import ImageWithJWT from "../../utils/ImageWithJWT";
+import getImageUrl from "../../utils/getImageUrl";
 import { hostname } from "../../HostnameConnect/Hostname";
 import DropdownMenu from "./DropdownMenu";
 
@@ -11,23 +12,14 @@ export default function BarNav() {
   const { isLoggedIn, logout } = useAuth();
   const user = isLoggedIn ? JSON.parse(localStorage.getItem("user")) : null;
   const navigate = useNavigate();
-  const token = localStorage.getItem("userToken");
   const firstName = user ? user.FirstName : "Visiteur";
-  const imageName =
-    user && user.ProfileImage
-      ? user.ProfileImage.split("\\").pop()
-      : "default-profile-image.png";
-  const imageUrl = user
-    ? `${hostname}/upload/${imageName}`
-    : "default-profile-image-url";
+  const imageUrl = user ? getImageUrl(user.ProfileImage) : "";
 
   const handleLogout = async () => {
     try {
       await fetch(`${hostname}/logout`, {
         method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        credentials: 'include',
       });
       logout();
       navigate("/");
@@ -38,8 +30,10 @@ export default function BarNav() {
 
   const newDay = new Date();
   const options = {
-    day: "numeric",
     weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
   };
   const today = newDay.toLocaleDateString("fr-FR", options);
 
@@ -54,7 +48,7 @@ export default function BarNav() {
             <span className="today">{today}</span>
             <li className="profileItem">
               <div className="profile-image">
-                <ImageWithJWT imageUrl={imageUrl} token={token} alt="Profile" />
+                <ImageWithJWT imageUrl={imageUrl} alt="Profile" />
               </div>
               <div className="salutation">
                 <DropdownMenu userName={firstName} onLogout={handleLogout} />

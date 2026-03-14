@@ -14,6 +14,7 @@ import { Form as MyForm } from "react-bootstrap";
 
 // Import Utitlities
 import ImageWithJWT from "../../utils/ImageWithJWT";
+import getImageUrl from "../../utils/getImageUrl";
 import { hostname } from "../../HostnameConnect/Hostname";
 
 // Import Contexts
@@ -33,7 +34,6 @@ export default function PostCard({ post, postLikes, postComments }) {
 
   // Local Storage Variables
   const currentUserID = parseInt(localStorage.getItem("userId"), 10);
-  const token = localStorage.getItem("userToken");
 
   // Mapping Creators
   const postCreator = users.find((user) => user.User_ID === post.User_ID);
@@ -59,16 +59,16 @@ export default function PostCard({ post, postLikes, postComments }) {
   }, []);
 
   if (!postCreator) {
-    return <div>Loading...</div>;
+    return <div>Chargement...</div>;
   }
 
   const imageUrl = [
-    `${hostname}/upload/${post.Image}`,
-    `${hostname}/upload/${postCreator.ProfileImage}`,
+    getImageUrl(post.Image),
+    getImageUrl(postCreator.ProfileImage),
   ];
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div>Chargement...</div>;
   }
 
   // Handle Modals
@@ -103,9 +103,7 @@ export default function PostCard({ post, postLikes, postComments }) {
       const response = await fetch(`${hostname}/posts/${post.Post_ID}`, {
         method: "PUT",
         body: formData,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        credentials: 'include',
       });
       if (response.ok) {
         // console.info("Post Edited");
@@ -124,9 +122,7 @@ export default function PostCard({ post, postLikes, postComments }) {
     try {
       const response = await fetch(`${hostname}/posts/${post.Post_ID}`, {
         method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        credentials: 'include',
       });
       if (response.ok) {
         // console.info("Post Deleted");
@@ -149,9 +145,9 @@ export default function PostCard({ post, postLikes, postComments }) {
           {
             method: "POST",
             headers: {
-              Authorization: `Bearer ${token}`,
               "Content-Type": "application/json",
             },
+            credentials: 'include',
             body: JSON.stringify({ userId }),
           }
         );
@@ -170,9 +166,9 @@ export default function PostCard({ post, postLikes, postComments }) {
           {
             method: "DELETE",
             headers: {
-              Authorization: `Bearer ${token}`,
               "Content-Type": "application/json",
             },
+            credentials: 'include',
             body: JSON.stringify({ userId }),
           }
         );
@@ -198,9 +194,9 @@ export default function PostCard({ post, postLikes, postComments }) {
         {
           method: "POST",
           headers: {
-            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
+          credentials: 'include',
           body: JSON.stringify({ comment }),
         }
       );
@@ -228,9 +224,9 @@ export default function PostCard({ post, postLikes, postComments }) {
             <span className="username">{postCreator.Username}</span>
           </div>
           {parseInt(currentUserID, 10) === parseInt(postCreator.User_ID, 10) ? (
-            <DropdownButton id="context-menu-btn">
-              <Dropdown.Item onClick={handleOpenModal}>Edit</Dropdown.Item>
-              <Dropdown.Item onClick={handleOpenDelModal}>Delete</Dropdown.Item>
+            <DropdownButton id="context-menu-btn" title="">
+              <Dropdown.Item onClick={handleOpenModal}>Modifier</Dropdown.Item>
+              <Dropdown.Item onClick={handleOpenDelModal}>Supprimer</Dropdown.Item>
             </DropdownButton>
           ) : null}
         </div>
@@ -274,12 +270,12 @@ export default function PostCard({ post, postLikes, postComments }) {
             onClick={handleOpenCommentModal}
             className="view-comments-btn"
           >
-            View All Comments
+            Voir tous les commentaires
           </Card.Link>
           <MyForm className="submit-comment-form">
             <MyForm.Control
               type="text"
-              placeholder="Write a comment..."
+              placeholder="Écrire un commentaire..."
               value={comment}
               onChange={handleComment}
             />
@@ -288,14 +284,14 @@ export default function PostCard({ post, postLikes, postComments }) {
               type="submit"
               onClick={handleSubmitComment}
             >
-              Post
+              <i className="fa-regular fa-paper-plane" />
             </button>
           </MyForm>
         </Card.Body>
       </Card>
       <Modal show={showModal} onHide={handleCloseModal} className="modals">
         <Modal.Header closeButton>
-          <Modal.Title>Edit Post</Modal.Title>
+          <Modal.Title>Modifier le poste</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Formik
@@ -306,19 +302,19 @@ export default function PostCard({ post, postLikes, postComments }) {
             {({ setFieldValue }) => (
               <Form>
                 <div className="title-content">
-                  <label htmlFor="Title">Title</label>
+                  <label htmlFor="Title">Titre</label>
                   <Field
                     name="Title"
-                    placeholder="Title"
+                    placeholder="Titre"
                     type="text"
                     className="form-control"
                   />
-                  <label htmlFor="Content">Content</label>
+                  <label htmlFor="Content">Contenu</label>
                   <Field
                     name="Content"
                     component="textarea"
                     rows="3"
-                    placeholder="Write Post"
+                    placeholder="Contenu du poste"
                     className="form-control"
                   />
                 </div>
@@ -329,12 +325,12 @@ export default function PostCard({ post, postLikes, postComments }) {
                   </div>
                   <div className="radio-group">
                     <Field name="Visibility" type="radio" value="Private" />
-                    <label htmlFor="Visibility">Private</label>
+                    <label htmlFor="Visibility">Privé</label>
                   </div>
                 </div>
                 <div className="img-upload">
                   <label htmlFor="Image">
-                    <i className="fa-solid fa-image" /> Attach Image
+                    <i className="fa-solid fa-image" /> Joindre une image
                   </label>
                   <input
                     id="Image"
@@ -346,7 +342,7 @@ export default function PostCard({ post, postLikes, postComments }) {
                   />
                 </div>
                 <button id="editPost-btn" type="submit">
-                  Edit
+                  Modifier
                 </button>
               </Form>
             )}
@@ -359,15 +355,15 @@ export default function PostCard({ post, postLikes, postComments }) {
         className="modals"
       >
         <Modal.Header closeButton>
-          <Modal.Title>Delete Post</Modal.Title>
+          <Modal.Title>Supprimer le poste</Modal.Title>
         </Modal.Header>
-        <Modal.Body>Are you sure you want to delete this post?</Modal.Body>
+        <Modal.Body>Êtes-vous sûr de vouloir supprimer ce poste ?</Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleCloseDelModal}>
-            Close
+            Annuler
           </Button>
           <Button variant="danger" onClick={handleDeletePost}>
-            Delete
+            Supprimer
           </Button>
         </Modal.Footer>
       </Modal>
@@ -377,18 +373,18 @@ export default function PostCard({ post, postLikes, postComments }) {
         className="modals"
       >
         <Modal.Header closeButton>
-          <Modal.Title>Comments</Modal.Title>
+          <Modal.Title>Commentaires</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {commentUserPairs.length === 0 ? (
-            <p>No comments yet</p>
+            <p>Aucun commentaire pour l'instant</p>
           ) : (
             commentUserPairs.map(({ commnt, user }) => (
               <div className="comment" key={commnt.Comment_ID}>
                 {user && (
                   <div className="profileImgDiv-comments">
                     <ImageWithJWT
-                      imageUrl={`${hostname}/upload/${user.ProfileImage}`}
+                      imageUrl={getImageUrl(user.ProfileImage)}
                     />
                   </div>
                 )}
@@ -403,7 +399,7 @@ export default function PostCard({ post, postLikes, postComments }) {
           <MyForm className="submit-comment-form">
             <MyForm.Control
               type="text"
-              placeholder="Write a comment..."
+              placeholder="Écrire un commentaire..."
               value={comment}
               onChange={handleComment}
             />

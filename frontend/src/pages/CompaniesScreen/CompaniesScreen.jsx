@@ -17,8 +17,6 @@ export default function CompaniesScreen() {
     getCompanies(); // Appel de la fonction pour obtenir les entreprises lors du chargement
   }, []);
 
-  const token = localStorage.getItem("userToken");
-
   const handleOpenModal = () => setShowModal(true);
   const handleCloseModal = () => setShowModal(false);
 
@@ -47,9 +45,7 @@ export default function CompaniesScreen() {
       await fetch(`${hostname}/company`, {
         method: "POST",
         body: formData,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        credentials: 'include',
       }).then((res) => {
         if (res.ok) {
           console.info(res);
@@ -68,83 +64,43 @@ export default function CompaniesScreen() {
   return (
     <div className="container">
       <UserBar />
-      <div>
-        <Button className="create-btn" onClick={handleOpenModal}>
-          <i className="fas fa-plus" /> Create Company
-        </Button>
-        {/* Affichage des entreprises */}
+      <div className="content-area">
         {companies.map((company) => (
-          <div key={company.Company_ID}>
-            <CompanyCard company={company} />
-          </div>
+          <CompanyCard key={company.Company_ID} company={company} />
         ))}
       </div>
+      <div className="sidebar">
+        <div className="sidebar-item">
+          <h3>Entreprises</h3>
+          <Button className="create-btn" onClick={handleOpenModal} style={{ width: "100%" }}>
+            <i className="fas fa-plus" /> Créer une entreprise
+          </Button>
+        </div>
+      </div>
       <Modal show={showModal} onHide={handleCloseModal} className="modals">
-        <Modal.Header closeButton>Create Company</Modal.Header>
+        <Modal.Header closeButton><Modal.Title>Créer une entreprise</Modal.Title></Modal.Header>
         <Modal.Body>
           <Formik initialValues={initialValues} onSubmit={handleCreateCompany}>
             {({ setFieldValue }) => (
               <Form>
                 <div className="title-content">
-                  <label htmlFor="Name">Company Name</label>
-                  <Field
-                    name="Name"
-                    placeholder="Company Name"
-                    type="text"
-                    className="form-control"
-                  />
-
-                  <label htmlFor="URL">Website URL</label>
-                  <Field
-                    name="URL"
-                    placeholder="Website URL"
-                    type="text"
-                    className="form-control"
-                  />
-
-                  <label htmlFor="Logo">Company Logo</label>
-                  <input
-                    name="Logo"
-                    type="file"
-                    onChange={(e) =>
-                      setFieldValue("Logo", e.currentTarget.files[0])
-                    }
-                  />
-
-                  <label htmlFor="Phone">Phone</label>
-                  <Field
-                    name="Phone"
-                    placeholder="Phone"
-                    type="text"
-                    className="form-control"
-                  />
-
+                  <label htmlFor="Name">Nom de l'entreprise</label>
+                  <Field name="Name" placeholder="Nom de l'entreprise" type="text" className="form-control" />
+                  <label htmlFor="URL">Site web</label>
+                  <Field name="URL" placeholder="https://..." type="text" className="form-control" />
+                  <label htmlFor="Logo">Logo</label>
+                  <input name="Logo" type="file" onChange={(e) => setFieldValue("Logo", e.currentTarget.files[0])} />
+                  <label htmlFor="Phone">Téléphone</label>
+                  <Field name="Phone" placeholder="Téléphone" type="text" className="form-control" />
                   <label htmlFor="Email">Email</label>
-                  <Field
-                    name="Email"
-                    placeholder="Email"
-                    type="email"
-                    className="form-control"
-                  />
-
-                  <label htmlFor="Activity">Activity</label>
-                  <Field
-                    name="Activity"
-                    placeholder="Activity"
-                    type="text"
-                    className="form-control"
-                  />
-
-                  <label htmlFor="Address">Address</label>
-                  <Field
-                    name="Address"
-                    placeholder="Address"
-                    type="text"
-                    className="form-control"
-                  />
+                  <Field name="Email" placeholder="Email" type="email" className="form-control" />
+                  <label htmlFor="Activity">Secteur d'activité</label>
+                  <Field name="Activity" placeholder="Secteur d'activité" type="text" className="form-control" />
+                  <label htmlFor="Address">Adresse</label>
+                  <Field name="Address" placeholder="Adresse" type="text" className="form-control" />
                 </div>
-                <Button id="createCompany-btn" type="submit">
-                  Create
+                <Button id="createCompany-btn" type="submit" style={{ marginTop: "1em", width: "100%" }}>
+                  Créer
                 </Button>
               </Form>
             )}

@@ -3,7 +3,6 @@ import {
   View,
   Text,
   TextInput,
-  Button,
   TouchableOpacity,
   Platform,
 } from 'react-native';
@@ -88,29 +87,34 @@ const ConnexionScreen = () => {
 
   return (
     <View style={styles.container}>
-      <DisplayURL style={styles.urlText} />
-      <Text style={styles.title}>Page de Connexion</Text>
+      <Text style={styles.logo}>WorkSocial</Text>
+      <Text style={styles.subtitle}>Connectez-vous à votre espace</Text>
+      <Text style={styles.title}>Connexion</Text>
       <TextInput
-        placeholder="Email"
+        placeholder="Adresse email"
+        placeholderTextColor="#94A3B8"
         style={styles.input}
         value={email}
         onChangeText={setEmail}
+        keyboardType="email-address"
+        autoCapitalize="none"
       />
       <TextInput
         placeholder="Mot de passe"
+        placeholderTextColor="#94A3B8"
         secureTextEntry={true}
         style={styles.input}
         value={password}
         onChangeText={setPassword}
       />
       {renderErrorMessage('pass')}
-      <Button title="Connexion" onPress={handleSubmit} />
+      <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+        <Text style={styles.buttonText}>Se connecter</Text>
+      </TouchableOpacity>
       <TouchableOpacity
         onPress={() => navigation.navigate('InscriptionScreen')}>
-        <Text>Vous n'avez pas de compte ? Inscrivez-vous</Text>
+        <Text style={styles.signUpLink}>Pas encore de compte ? S'inscrire</Text>
       </TouchableOpacity>
-      {isSubmitted && <Text>Connexion réussie !!</Text>}
-      {/* Affichage du modal en cas d'erreur de connexion */}
       <VerificationCodeModal
         visible={modalVisible}
         onRequestClose={() => setModalVisible(false)}

@@ -4,31 +4,31 @@ import PropTypes from "prop-types";
 import Card from "react-bootstrap/Card";
 
 import ImageWithJWT from "../../utils/ImageWithJWT";
-import { hostname } from "../../HostnameConnect/Hostname";
+import getImageUrl from "../../utils/getImageUrl";
 
 // import { useCompany } from "../../contexts/CompanyContext";
 
 export default function CompanyCard({ company }) {
-  const imageUrl = `${hostname}/upload/${company.Logo}`;
+  const imageUrl = getImageUrl(company.Logo);
 
   return (
     <div>
       <Card>
         <div className="card-img">
-          <ImageWithJWT className="company-img" imageUrl={imageUrl[0]} />
+          <ImageWithJWT className="company-img" imageUrl={imageUrl} />
         </div>
         <Card.Body>
           <Card.Title>{company.Name}</Card.Title>
           <Card.Text>
-            <strong>URL:</strong> {company.URL}
+            <strong>Site web :</strong> {company.URL}
             <br />
-            <strong>Phone:</strong> {company.Phone}
+            <strong>Téléphone :</strong> {company.Phone}
             <br />
-            <strong>Email:</strong> {company.Email}
+            <strong>Email :</strong> {company.Email}
             <br />
-            <strong>Activity:</strong> {company.Activity}
+            <strong>Secteur :</strong> {company.Activity}
             <br />
-            <strong>Address:</strong> {company.Address}
+            <strong>Adresse :</strong> {company.Address}
           </Card.Text>
         </Card.Body>
       </Card>

@@ -1,82 +1,73 @@
-const models = require("../models");
+const prisma = require("../lib/prisma");
+const { deleteS3Object } = require("../lib/deleteS3Object");
 
-const getSurveys = (req, res) => {
-  models.survey
-    .findAll()
-    .then(([rows]) => {
-      res.send(rows);
-    })
-    .catch((err) => {
-      console.error(err);
-      res.sendStatus(500);
-    });
-};
-
-const getSurveyByID = (req, res) => {
-  models.survey
-    .findByPK(req.params.id)
-    .then(([rows]) => {
-      if (rows.length === 0) {
-        res.sendStatus(404);
-      } else {
-        res.send(rows[0]);
-      }
-    })
-    .catch((err) => {
-      console.error(err);
-      res.sendStatus(500);
-    });
-};
-
-const createSurvey = (req, res) => {
-  const survey = req.body;
-  const userID = req.User_ID;
-
-  if (req.file) {
-    survey.Image = req.file.filename;
+const getSurveys = async (_req, res) => {
+  try {
+    const surveys = await prisma.survey.findMany({ orderBy: { Created_At: "desc" } });
+    res.send(surveys);
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
   }
+};
 
-  console.info(survey);
-  models.survey
-    .insert(survey, userID)
-    .then(([result]) => {
-      res.location(`/surveys/${result.insertId}`).sendStatus(201);
-    })
-    .catch((err) => {
-      console.error(err);
-      res.sendStatus(500);
+const getSurveyByID = async (req, res) => {
+  try {
+    const survey = await prisma.survey.findUnique({
+      where: { Survey_ID: parseInt(req.params.id, 10) },
     });
+    if (!survey) return res.sendStatus(404);
+    res.send(survey);
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
+  return null;
 };
 
-const updateSurvey = (req, res) => {
-  const survey = req.body;
-  models.survey
-    .update(survey)
-    .then(() => {
-      res.sendStatus(204);
-    })
-    .catch((err) => {
-      console.error(err);
-      res.sendStatus(500);
+const createSurvey = async (req, res) => {
+  try {
+    const { Title, Content, Visibility, EndDate, Option1, Option2, Option3, Option4 } = req.body;
+    const Image = req.file ? `${process.env.S3_PUBLIC_URL}/${req.file.key}` : null;
+    const survey = await prisma.survey.create({
+      data: { Title, Content, Visibility, EndDate, Option1, Option2, Option3, Option4, Image, User_ID: req.User_ID },
     });
+    res.location(`/surveys/${survey.Survey_ID}`).sendStatus(201);
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
 };
 
-const deleteSurvey = (req, res) => {
-  models.survey
-    .delete(req.params.id)
-    .then(() => {
-      res.status(204).send("Successfully deleted Survey");
-    })
-    .catch((err) => {
-      console.error(err);
-      res.sendStatus(500);
-    });
+const updateSurvey = async (req, res) => {
+  try {
+    const id = parseInt(req.params.id, 10);
+    const { Title, Content, Visibility, EndDate, Option1, Option2, Option3, Option4 } = req.body;
+    const data = { Title, Content, Visibility, EndDate, Option1, Option2, Option3, Option4 };
+    if (req.file) {
+      const old = await prisma.survey.findUnique({ where: { Survey_ID: id }, select: { Image: true } });
+      if (old?.Image) await deleteS3Object(old.Image);
+      data.Image = `${process.env.S3_PUBLIC_URL}/${req.file.key}`;
+    }
+    await prisma.survey.update({ where: { Survey_ID: id }, data });
+    res.sendStatus(204);
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
 };
 
-module.exports = {
-  getSurveys,
-  getSurveyByID,
-  createSurvey,
-  updateSurvey,
-  deleteSurvey,
+const deleteSurvey = async (req, res) => {
+  try {
+    const id = parseInt(req.params.id, 10);
+    const survey = await prisma.survey.findUnique({ where: { Survey_ID: id }, select: { Image: true } });
+    await prisma.survey.delete({ where: { Survey_ID: id } });
+    if (survey?.Image) await deleteS3Object(survey.Image);
+    res.sendStatus(204);
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
 };
+
+module.exports = { getSurveys, getSurveyByID, createSurvey, updateSurvey, deleteSurvey };

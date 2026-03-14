@@ -1,103 +1,77 @@
-const models = require("../models");
+const prisma = require("../lib/prisma");
 
-const browse = (req, res) => {
-  models.individualchat
-    .findAll()
-    .then(([rows]) => {
-      res.send(rows);
-    })
-    .catch((err) => {
-      console.error(err);
-      res.sendStatus(500);
+const browse = async (_req, res) => {
+  try {
+    const chats = await prisma.individualChat.findMany();
+    res.send(chats);
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
+};
+
+const getAllChatsForUser = async (req, res) => {
+  try {
+    const userId = parseInt(req.params.userId, 10);
+    const chats = await prisma.individualChat.findMany({
+      where: { OR: [{ User_ID1: userId }, { User_ID2: userId }] },
     });
+    res.send(chats);
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
 };
 
-const getAllChatsForUser = (req, res) => {
-  models.individualchat
-    .findAllByUserId(req.params.userId)
-    .then(([rows]) => {
-      console.info("Résultats de la base de données:", rows);
-      res.send(rows);
-    })
-    .catch((err) => {
-      console.error(err);
-      res.sendStatus(500);
+const getIndividualchat = async (req, res) => {
+  try {
+    const chat = await prisma.individualChat.findUnique({
+      where: { Chat_ID: parseInt(req.params.individualchatID, 10) },
     });
+    if (!chat) return res.sendStatus(404);
+    res.send(chat);
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
+  return null;
 };
 
-const getIndividualchat = (req, res) => {
-  models.individualchat
-    .findByIndividualchatId(req.params.individualchatID)
-    .then(([rows]) => {
-      if (rows[0] == null) {
-        res.sendStatus(404);
-      } else {
-        res.send(rows[0]);
-      }
-    })
-    .catch((err) => {
-      console.error(err);
-      res.sendStatus(500);
+const createIndividualchat = async (req, res) => {
+  try {
+    const { Content } = req.body;
+    const User_ID1 = parseInt(req.body.User_ID1, 10);
+    const User_ID2 = parseInt(req.body.User_ID2, 10);
+    const chat = await prisma.individualChat.create({ data: { Content, User_ID1, User_ID2 } });
+    res.status(201).json({ chatId: chat.Chat_ID });
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
+};
+
+const deleteIndividualchat = async (req, res) => {
+  try {
+    await prisma.individualChat.delete({
+      where: { Chat_ID: parseInt(req.params.individualchatID, 10) },
     });
+    res.sendStatus(204);
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
 };
 
-const createIndividualchat = (req, res) => {
-  const individualchat = req.body;
-
-  models.individualchat
-    .insert(individualchat)
-    .then((result) => {
-      const { insertId } = result; // Obtention de l'ID inséré
-      res.status(201).json({
-        message: "Message créé avec succès",
-        chatId: insertId,
-      });
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).json({ error: "Erreur interne du serveur" });
-    });
+const update = async (req, res) => {
+  try {
+    const id = parseInt(req.params.individualchatID, 10);
+    const { Content } = req.body;
+    await prisma.individualChat.update({ where: { Chat_ID: id }, data: { Content } });
+    res.sendStatus(204);
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
 };
 
-const deleteIndividualchat = (req, res) => {
-  models.individualchat
-    .delete(req.params.individualchatID)
-    .then(([result]) => {
-      if (result.affectedRows === 0) {
-        res.sendStatus(404);
-      } else {
-        res.sendStatus(204);
-      }
-    })
-    .catch((err) => {
-      console.error(err);
-      res.sendStatus(500);
-    });
-};
-
-const update = (req, res) => {
-  const individualchat = req.body;
-  individualchat.id = parseInt(req.params.individualchatID, 10);
-  models.individualchat
-    .update(individualchat)
-    .then(([result]) => {
-      if (result.length === 0) {
-        res.sendStatus(404);
-      } else {
-        res.sendStatus(204);
-      }
-    })
-    .catch((err) => {
-      console.error(err);
-      res.sendStatus(500);
-    });
-};
-
-module.exports = {
-  browse,
-  getAllChatsForUser,
-  getIndividualchat,
-  createIndividualchat,
-  deleteIndividualchat,
-  update,
-};
+module.exports = { browse, getAllChatsForUser, getIndividualchat, createIndividualchat, deleteIndividualchat, update };

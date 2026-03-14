@@ -6,23 +6,57 @@ const path = require("node:path");
 // create express app
 
 const express = require("express");
-const app = express();
-app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', 'https://worksocialmounir.netlify.app');
-  next();
-});
+const helmet = require("helmet");
 
-// use some application-level middlewares
+const app = express();
+
+// Helmet — headers HTTP de sécurité (anti-XSS, anti-clickjacking, HTTPS forcé, etc.)
+app.use(helmet());
 
 app.use(express.json());
 
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
+const rateLimit = require("express-rate-limit");
 
-app.use(cors());
-app.use("/upload", express.static(path.join(__dirname, "../assets/upload")));
+// Rate limit — max 10 requêtes par IP toutes les 15 minutes sur les routes sensibles
+// Bloque les attaques brute-force sur les mots de passe et le spam d'inscriptions
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: process.env.NODE_ENV === "production" ? 10 : 50,
+  message: { error: "Trop de tentatives. Réessaie dans 15 minutes." },
+});
 
-app.use(cors());
-// app.use(express.urlencoded({ extended: true }));
+// CORS — liste blanche d'origines autorisées (env + IP locale pour Expo sur vrai téléphone)
+const allowedOrigins = [
+  process.env.CORS_ORIGIN,
+  process.env.CORS_ORIGIN_WEB,
+  process.env.CORS_ORIGIN_DEV,
+].filter(Boolean);
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Autoriser les requêtes sans origine (ex: mobile natif, Postman)
+      if (!origin) return callback(null, true);
+      // En dev : autoriser tous les localhost
+      if (process.env.NODE_ENV !== "production" && /^http:\/\/localhost(:\d+)?$/.test(origin)) {
+        return callback(null, true);
+      }
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+      callback(new Error("CORS: origine non autorisée"));
+    },
+    credentials: true,
+  })
+);
+
+// cookie-parser — permet à Express de lire req.cookies (pour le JWT httpOnly)
+app.use(cookieParser());
+
+// Appliquer le rate limit sur les routes sensibles (auth uniquement, pas les données)
+app.use("/login", authLimiter);
+app.use("/reset-password", authLimiter);
+
 // import and mount the API routes
 
 const CompaniesRouter = require("./routers/CompaniesRouter");
@@ -40,6 +74,11 @@ const PostLikeDislikeRouter = require("./routers/PostLikeDislikeRoutes");
 const SurveyLikesRouter = require("./routers/SurveyLikesRouter");
 const SurveyVoteRouter = require("./routers/SurveyVoteRouter");
 const CompanyUserRouter = require("./routers/CompanyUserRouter");
+const UserFollowersRouter = require("./routers/UserFollowersRouter");
+const GroupChatRouter = require("./routers/GroupChatRouter");
+const GroupParticipantsRouter = require("./routers/GroupParticipantsRouter");
+const PostCommentLikesRouter = require("./routers/PostCommentLikesRouter");
+const SurveycCommentLikesRouter = require("./routers/SurveycCommentLikesRouter");
 
 app.use(CompaniesRouter);
 app.use(userRouter);
@@ -56,9 +95,12 @@ app.use(PostLikeDislikeRouter);
 app.use(SurveyLikesRouter);
 app.use(SurveyVoteRouter);
 app.use(CompanyUserRouter);
+app.use(UserFollowersRouter);
+app.use(GroupChatRouter);
+app.use(GroupParticipantsRouter);
+app.use(PostCommentLikesRouter);
+app.use(SurveycCommentLikesRouter);
 
-// serve the `backend/public` folder for public resources
-app.use("/upload", express.static(path.join(__dirname, "../assets/upload")));
 app.use(express.static(path.join(__dirname, "../public")));
 
 // serve REACT APP

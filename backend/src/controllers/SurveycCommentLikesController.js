@@ -1,92 +1,49 @@
-// SurveycCommentLikesController.js
-const models = require("../models");
+const prisma = require("../lib/prisma");
 
-const getSurveycCommentLikes = (req, res) => {
-  models.surveycCommentLikes
-    .getSurveycCommentLikes()
-    .then(([rows]) => {
-      res.send(rows);
-    })
-    .catch((err) => {
-      console.error(err);
-      res.sendStatus(500);
+const getSurveycCommentLikes = async (_req, res) => {
+  try {
+    const likes = await prisma.surveyCommentLike.findMany();
+    res.send(likes);
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
+};
+
+const getSurveycCommentLikesByID = async (req, res) => {
+  try {
+    const like = await prisma.surveyCommentLike.findUnique({
+      where: { Like_ID: parseInt(req.params.id, 10) },
     });
+    if (!like) return res.sendStatus(404);
+    res.send(like);
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
+  return null;
 };
 
-const getSurveycCommentLikesByID = (req, res) => {
-  models.surveycCommentLikes
-    .getSurveycCommentLikesByID(req.params.id)
-    .then(([rows]) => {
-      if (rows[0] == null) {
-        res.sendStatus(404);
-      } else {
-        res.send(rows[0]);
-      }
-    })
-    .catch((err) => {
-      console.error(err);
-      res.sendStatus(500);
-    });
+const createSurveycCommentLikes = async (req, res) => {
+  try {
+    const Comment_ID = parseInt(req.body.Comment_ID, 10);
+    const User_ID = parseInt(req.body.User_ID, 10);
+    const like = await prisma.surveyCommentLike.create({ data: { Comment_ID, User_ID } });
+    res.location(`/surveycCommentLikes/${like.Like_ID}`).sendStatus(201);
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
 };
 
-const createSurveycCommentLikes = (req, res) => {
-  const surveycCommentLikes = req.body;
-
-  // TODO: Ajouter des validations (longueur, format...)
-
-  models.surveycCommentLikes
-    .createSurveycCommentLikes(surveycCommentLikes)
-    .then(([result]) => {
-      res.location(`/surveycCommentLikes/${result.insertId}`).sendStatus(201);
-    })
-    .catch((err) => {
-      console.error(err);
-      res.sendStatus(500);
-    });
+const deleteSurveycCommentLikes = async (req, res) => {
+  try {
+    await prisma.surveyCommentLike.delete({ where: { Like_ID: parseInt(req.params.id, 10) } });
+    res.sendStatus(204);
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
 };
 
-const updateSurveycCommentLikes = (req, res) => {
-  const surveycCommentLikes = req.body;
-
-  // TODO: Ajouter des validations (longueur, format...)
-
-  surveycCommentLikes.id = parseInt(req.params.id, 10);
-
-  models.surveycCommentLikes
-    .updateSurveycCommentLikes(surveycCommentLikes.id, surveycCommentLikes)
-    .then(([result]) => {
-      if (result.affectedRows === 0) {
-        res.sendStatus(404);
-      } else {
-        res.sendStatus(204);
-      }
-    })
-    .catch((err) => {
-      console.error(err);
-      res.sendStatus(500);
-    });
-};
-
-const deleteSurveycCommentLikes = (req, res) => {
-  models.surveycCommentLikes
-    .deleteSurveycCommentLikes(req.params.id)
-    .then(([result]) => {
-      if (result.affectedRows === 0) {
-        res.sendStatus(404);
-      } else {
-        res.sendStatus(204);
-      }
-    })
-    .catch((err) => {
-      console.error(err);
-      res.sendStatus(500);
-    });
-};
-
-module.exports = {
-  getSurveycCommentLikes,
-  getSurveycCommentLikesByID,
-  createSurveycCommentLikes,
-  updateSurveycCommentLikes,
-  deleteSurveycCommentLikes,
-};
+module.exports = { getSurveycCommentLikes, getSurveycCommentLikesByID, createSurveycCommentLikes, deleteSurveycCommentLikes };

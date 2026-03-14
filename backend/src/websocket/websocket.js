@@ -1,70 +1,89 @@
 const WebSocket = require("ws");
-const models = require("../models");
+const jwt = require("jsonwebtoken");
+const prisma = require("../lib/prisma");
 
-const WebSocketPort = 5001;
 let wss;
 const clients = {};
+
+// Parse cookies from the raw cookie header string
+const parseCookies = (cookieHeader) => {
+  const cookies = {};
+  if (!cookieHeader) return cookies;
+  cookieHeader.split(";").forEach((pair) => {
+    const [name, ...rest] = pair.trim().split("=");
+    if (name) cookies[name.trim()] = rest.join("=");
+  });
+  return cookies;
+};
+
 // eslint-disable-next-line camelcase
 const broadcastMessage = (message, user_ID1, user_ID2) => {
   // eslint-disable-next-line camelcase
-  console.info(
-    // eslint-disable-next-line camelcase
-    `Broadcasting message to specific clients: ${user_ID1} and ${user_ID2}`
-  );
-  // eslint-disable-next-line camelcase
   [user_ID1, user_ID2].forEach((userId) => {
     if (clients[userId] && clients[userId].readyState === WebSocket.OPEN) {
-      console.info(`Sending message to user: ${userId}`);
       clients[userId].send(JSON.stringify(message));
     }
   });
 };
 
-const setupWebSocketServer = () => {
-  wss = new WebSocket.Server({ port: WebSocketPort });
+const setupWebSocketServer = (server) => {
+  // Attach to the existing HTTP server — no separate port needed
+  wss = new WebSocket.Server({ server });
 
-  wss.on("connection", (ws) => {
-    console.info("WebSocket client connected");
+  wss.on("connection", (ws, req) => {
+    // Authenticate via JWT cookie at connection time (cookie sent on WS handshake)
+    const cookies = parseCookies(req.headers.cookie);
+    const token = cookies.token;
+
+    if (!token) {
+      ws.send(JSON.stringify({ error: "Non authentifié" }));
+      ws.close();
+      return;
+    }
+
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const userId = decoded.sub;
+      // eslint-disable-next-line no-param-reassign
+      ws.authenticatedUserId = userId;
+      clients[userId] = ws;
+      ws.send(JSON.stringify({ type: "init_ok", userId }));
+    } catch {
+      ws.send(JSON.stringify({ error: "Token invalide" }));
+      ws.close();
+      return;
+    }
 
     ws.on("message", async (message) => {
-      console.info("Received:", message);
-
       try {
         const parsedMessage = JSON.parse(message);
 
-        // Assumer que le message initial contient l'ID de l'utilisateur pour l'associer au WebSocket
-        if (parsedMessage.type === "init") {
-          clients[parsedMessage.userId] = ws;
+        if (!ws.authenticatedUserId) {
+          ws.send(JSON.stringify({ error: "Non authentifié" }));
+          ws.close();
           return;
         }
 
-        if (
-          !parsedMessage.Content ||
-          !Number.isInteger(parsedMessage.user_ID1) ||
-          !Number.isInteger(parsedMessage.user_ID2)
-        ) {
-          throw new Error("Invalid or missing fields in the message");
+        if (!parsedMessage.Content || !Number.isInteger(parsedMessage.user_ID2)) {
+          throw new Error("Champs manquants ou invalides");
         }
 
-        // Insérer le message dans la base de données
-        const insertResponse = await models.individualchat.insert({
-          Content: parsedMessage.Content,
-          User_ID1: parsedMessage.user_ID1,
-          User_ID2: parsedMessage.user_ID2,
+        // L'expéditeur est toujours l'utilisateur authentifié — impossible à falsifier
+        const user_ID1 = ws.authenticatedUserId;
+        const { user_ID2 } = parsedMessage;
+
+        const chat = await prisma.individualChat.create({
+          data: {
+            Content: parsedMessage.Content,
+            User_ID1: user_ID1,
+            User_ID2: user_ID2,
+          },
         });
 
-        // Construire le message à diffuser
-        const messageToBroadcast = {
-          id: insertResponse.insertId,
-          Content: parsedMessage.Content,
-          User_ID1: parsedMessage.user_ID1,
-          User_ID2: parsedMessage.user_ID2,
-        };
-
         broadcastMessage(
-          messageToBroadcast,
-          parsedMessage.user_ID1,
-          parsedMessage.user_ID2
+          { id: chat.Chat_ID, Content: chat.Content, User_ID1: chat.User_ID1, User_ID2: chat.User_ID2 },
+          user_ID1,
+          user_ID2
         );
       } catch (error) {
         console.error("Error handling message:", error);
@@ -73,8 +92,6 @@ const setupWebSocketServer = () => {
     });
 
     ws.on("close", () => {
-      console.info("WebSocket client disconnected");
-      // Enlever le client de la liste lorsqu'il se déconnecte
       Object.keys(clients).forEach((userId) => {
         if (clients[userId] === ws) {
           delete clients[userId];
@@ -83,7 +100,7 @@ const setupWebSocketServer = () => {
     });
   });
 
-  console.info("WebSocket server setup complete");
+  console.info("WebSocket server attached to HTTP server");
 };
 
 module.exports = { setupWebSocketServer, broadcastMessage };

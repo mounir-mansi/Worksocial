@@ -4,7 +4,6 @@ import PropTypes from "prop-types";
 function ChatModal({ userId, isMinimized, onClose, onMinimize, style }) {
   const [currentMessage, setCurrentMessage] = useState("");
   const [messages, setMessages] = useState([]);
-  const token = localStorage.getItem("userToken");
   const userIdSend = localStorage.getItem("userId");
   console.info("UserID Send:", userIdSend, "UserID:", userId);
   const endOfMessagesRef = useRef(null);
@@ -16,9 +15,9 @@ function ChatModal({ userId, isMinimized, onClose, onMinimize, style }) {
     fetch(url, {
       method: "GET",
       headers: {
-        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
+      credentials: 'include',
     })
       .then((response) => {
         console.info("Réponse du serveur:", response);
@@ -44,7 +43,7 @@ function ChatModal({ userId, isMinimized, onClose, onMinimize, style }) {
       .catch((error) => {
         console.error("Erreur lors du chargement des messages:", error);
       });
-  }, [userId, userIdSend, token]);
+  }, [userId, userIdSend]);
 
   // Gérer l'envoi des messages
   const handleSendMessage = () => {
@@ -52,9 +51,9 @@ function ChatModal({ userId, isMinimized, onClose, onMinimize, style }) {
       fetch("http://localhost:5000/individualchats", {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
+        credentials: 'include',
         body: JSON.stringify({
           Content: currentMessage,
           User_ID1: userIdSend,

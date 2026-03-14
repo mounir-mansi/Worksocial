@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 import "./ChatWebSocket.css";
+import { hostname } from "../../../HostnameConnect/Hostname";
 
 function ChatWebSocket({
   userId,
@@ -14,27 +15,25 @@ function ChatWebSocket({
   const [messages, setMessages] = useState([]);
   const ws = useRef(null);
   const endOfMessagesRef = useRef(null);
-  const token = localStorage.getItem("userToken");
   const userIdSend = localStorage.getItem("userId");
   const Username = localStorage.getItem("username");
 
+  // WS URL auto-détectée : même domaine que la page, protocole adapté (wss en HTTPS)
+  const wsUrl = `${window.location.protocol === "https:" ? "wss:" : "ws:"}//${window.location.host}`;
+
   // Établissement de la connexion WebSocket
   useEffect(() => {
-    ws.current = new WebSocket("ws://localhost:5001");
+    ws.current = new WebSocket(wsUrl);
 
     ws.current.onopen = () => {
       console.info("WebSocket connected");
-      // Envoyer un message initial pour identifier l'utilisateur
-      ws.current.send(
-        JSON.stringify({ type: "init", userId: parseInt(userIdSend, 10) })
-      );
+      // Auth via cookie httpOnly — aucun token à envoyer manuellement
     };
 
     ws.current.onmessage = (event) => {
       const receivedMessage = JSON.parse(event.data);
       if (receivedMessage && receivedMessage.Content) {
-        // Vérifiez si l'utilisateur actuel est l'expéditeur
-        if (receivedMessage.user_ID1 !== parseInt(userIdSend, 10)) {
+        if (receivedMessage.User_ID1 !== parseInt(userIdSend, 10)) {
           setMessages((prevMessages) => [...prevMessages, receivedMessage]);
         }
       }
@@ -51,25 +50,16 @@ function ChatWebSocket({
 
   // Charger les messages historiques
   useEffect(() => {
-    // Remplacer cette URL par l'URL de votre API pour charger les messages
-    const url = `http://localhost:5000/individualchats/user/${userIdSend}`;
-
-    fetch(url, {
+    fetch(`${hostname}/individualchats/user/${userIdSend}`, {
       method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
     })
       .then((response) => {
-        console.info("Réponse du serveur:", response);
-        if (!response.ok) {
-          throw new Error("Erreur lors du chargement des messages");
-        }
+        if (!response.ok) throw new Error("Erreur lors du chargement des messages");
         return response.json();
       })
       .then((data) => {
-        console.info("Messages chargés:", data);
         const filteredMessages = data.filter(
           (msg) =>
             (parseInt(msg.User_ID1, 10) === parseInt(userIdSend, 10) &&
@@ -77,29 +67,21 @@ function ChatWebSocket({
             (parseInt(msg.User_ID1, 10) === parseInt(userId, 10) &&
               parseInt(msg.User_ID2, 10) === parseInt(userIdSend, 10))
         );
-
-        console.info("Messages filtrés:", filteredMessages);
         setMessages(filteredMessages);
       })
-
       .catch((error) => {
         console.error("Erreur lors du chargement des messages:", error);
       });
-  }, [userId, userIdSend, token]);
+  }, [userId, userIdSend]);
 
   // Envoyer des messages via WebSocket
   const handleSendMessage = () => {
     if (currentMessage.trim() !== "") {
       const messageToSend = {
         Content: currentMessage,
-        user_ID1: parseInt(userIdSend, 10),
         user_ID2: userId,
       };
-
-      ws.current.send(JSON.stringify(messageToSend)); // Convertit l'objet en chaîne JSON
-
-      // Ajout du message à l'état local
-      // setMessages((prevMessages) => [...prevMessages, messageToSend]);
+      ws.current.send(JSON.stringify(messageToSend));
       setCurrentMessage("");
     }
   };
@@ -108,7 +90,6 @@ function ChatWebSocket({
   useEffect(() => {
     endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
-  console.info("UserID Send:", userIdSend, "UserID:", userId);
 
   return (
     <div
@@ -136,9 +117,7 @@ function ChatWebSocket({
               {messages.map((msg, index) => (
                 <div
                   className={`message ${
-                    msg.user_ID1 === parseInt(userIdSend, 10)
-                      ? "sent"
-                      : "received"
+                    msg.User_ID1 === parseInt(userIdSend, 10) ? "sent" : "received"
                   }`}
                   key={msg.id || index}
                   ref={index === messages.length - 1 ? endOfMessagesRef : null}

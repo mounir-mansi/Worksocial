@@ -22,11 +22,6 @@ router.post(
   surveycCommentLikesController.createSurveycCommentLikes
 );
 
-router.put(
-  "/surveycCommentLikes/:id",
-  surveycCommentLikesController.updateSurveycCommentLikes
-);
-
 router.delete(
   "/surveycCommentLikes/:id",
   surveycCommentLikesController.deleteSurveycCommentLikes

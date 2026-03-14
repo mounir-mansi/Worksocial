@@ -13,14 +13,11 @@ export function PostProvider({ children }) {
   const [posts, setPosts] = useState([]);
   const [comments, setComments] = useState([]);
   const [likes, setLikes] = useState([]);
-  const token = localStorage.getItem("userToken");
 
   const getPosts = async () => {
     try {
       await fetch(`${hostname}/posts`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        credentials: 'include',
       }).then((res) => res.json().then((data) => setPosts(data)));
     } catch (error) {
       console.error("Erreur lors de la requête:", error);
@@ -33,9 +30,7 @@ export function PostProvider({ children }) {
         const response = await fetch(
           `${hostname}/posts/${post.Post_ID}/comments`,
           {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+            credentials: 'include',
           }
         );
         if (response.ok) {
@@ -58,9 +53,7 @@ export function PostProvider({ children }) {
         const response = await fetch(
           `${hostname}/posts/${post.Post_ID}/likes`,
           {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+            credentials: 'include',
           }
         );
         if (response.ok) {

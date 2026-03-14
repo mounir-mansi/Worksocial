@@ -10,6 +10,7 @@ import Modal from "react-bootstrap/Modal";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import { Form as MyForm } from "react-bootstrap";
 import ImageWithJWT from "../../utils/ImageWithJWT";
+import getImageUrl from "../../utils/getImageUrl";
 import { hostname } from "../../HostnameConnect/Hostname";
 import { useUser } from "../../contexts/UserContext";
 import { useSurvey } from "../../contexts/SurveyContext";
@@ -28,7 +29,6 @@ export default function SurveyCard({
   const [comment, setComment] = useState(""); // Ecrire un commentaire
   const [votedOption, setvotedOption] = useState(""); // Envoyer le Option choisi dans vote
   const currentUserID = parseInt(localStorage.getItem("userId"), 10);
-  const token = localStorage.getItem("userToken");
 
   // Mapping Creators
   const surveyCreator = users.find((user) => user.User_ID === survey.User_ID);
@@ -60,16 +60,16 @@ export default function SurveyCard({
   }, []);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div>Chargement...</div>;
   }
 
   if (!surveyCreator) {
-    return <div>Loading...</div>;
+    return <div>Chargement...</div>;
   }
 
   const imageUrl = [
-    `${hostname}/upload/${survey.Image}`,
-    `${hostname}/upload/${surveyCreator.ProfileImage}`,
+    getImageUrl(survey.Image),
+    getImageUrl(surveyCreator.ProfileImage),
   ];
 
   // Handle Modals
@@ -123,9 +123,9 @@ export default function SurveyCard({
           {
             method: "POST",
             headers: {
-              Authorization: `Bearer ${token}`,
               "Content-Type": "application/json",
             },
+            credentials: 'include',
             body: JSON.stringify({ userId }),
           }
         );
@@ -144,9 +144,9 @@ export default function SurveyCard({
           {
             method: "DELETE",
             headers: {
-              Authorization: `Bearer ${token}`,
               "Content-Type": "application/json",
             },
+            credentials: 'include',
             body: JSON.stringify({ userId }),
           }
         );
@@ -173,9 +173,9 @@ export default function SurveyCard({
         {
           method: "POST",
           headers: {
-            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
+          credentials: 'include',
           body: JSON.stringify({ comment }),
         }
       );
@@ -205,9 +205,9 @@ export default function SurveyCard({
           {
             method: "POST",
             headers: {
-              Authorization: `Bearer ${token}`,
               "Content-Type": "application/json",
             },
+            credentials: 'include',
             body: JSON.stringify({
               votedOption,
               userId: currentUserID,
@@ -270,9 +270,7 @@ export default function SurveyCard({
       const response = await fetch(`${hostname}/surveys/${survey.Survey_ID}`, {
         method: "PUT",
         body: formData,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        credentials: 'include',
       });
       if (response.ok) {
         console.info("Survey Edited");
@@ -291,9 +289,7 @@ export default function SurveyCard({
     try {
       const response = await fetch(`${hostname}/surveys/${survey.Survey_ID}`, {
         method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        credentials: 'include',
       });
       if (response.ok) {
         console.info("Survey Deleted");
@@ -319,9 +315,9 @@ export default function SurveyCard({
           </div>
           {parseInt(currentUserID, 10) ===
           parseInt(surveyCreator.User_ID, 10) ? (
-            <DropdownButton id="context-menu-btn">
-              <Dropdown.Item onClick={handleOpenModal}>Edit</Dropdown.Item>
-              <Dropdown.Item onClick={handleOpenDelModal}>Delete</Dropdown.Item>
+            <DropdownButton id="context-menu-btn" title="">
+              <Dropdown.Item onClick={handleOpenModal}>Modifier</Dropdown.Item>
+              <Dropdown.Item onClick={handleOpenDelModal}>Supprimer</Dropdown.Item>
             </DropdownButton>
           ) : null}
         </div>
@@ -439,7 +435,7 @@ export default function SurveyCard({
                 </div>
                 <div className="submit-survey">
                   <button name="submit" type="submit" onClick={handleVote}>
-                    Vote
+                    Voter
                   </button>
                 </div>
               </MyForm>
@@ -449,7 +445,7 @@ export default function SurveyCard({
       </Card>
       <Modal show={showModal} onHide={handleCloseModal} className="modals">
         <Modal.Header closeButton>
-          <Modal.Title>Edit Survey</Modal.Title>
+          <Modal.Title>Modifier le sondage</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Formik
@@ -462,7 +458,7 @@ export default function SurveyCard({
                 <div className="title-content">
                   <Field
                     name="Title"
-                    placeholder="Title"
+                    placeholder="Titre"
                     type="text"
                     className="form-control"
                   />
@@ -470,7 +466,7 @@ export default function SurveyCard({
                     name="Content"
                     component="textarea"
                     rows="3"
-                    placeholder="Write Survey"
+                    placeholder="Contenu du sondage"
                     className="form-control"
                   />
                 </div>
@@ -491,7 +487,7 @@ export default function SurveyCard({
                       value="Private"
                       className="form-check-input"
                     />
-                    <label htmlFor="Visibility">Private</label>
+                    <label htmlFor="Visibility">Privé</label>
                   </div>
                 </div>
                 <div className="options-group">
@@ -506,7 +502,7 @@ export default function SurveyCard({
                 </div>
                 <div className="img-upload">
                   <label htmlFor="Image">
-                    <i className="fa-solid fa-image" /> Attach Image
+                    <i className="fa-solid fa-image" /> Joindre une image
                   </label>
                   <input
                     id="Image"
@@ -518,7 +514,7 @@ export default function SurveyCard({
                   />
                 </div>
                 <button id="editSurvey-btn" type="submit">
-                  Edit
+                  Modifier
                 </button>
               </Form>
             )}
@@ -531,15 +527,15 @@ export default function SurveyCard({
         className="modals"
       >
         <Modal.Header closeButton>
-          <Modal.Title>Delete Post</Modal.Title>
+          <Modal.Title>Supprimer le sondage</Modal.Title>
         </Modal.Header>
-        <Modal.Body>Are you sure you want to delete this post?</Modal.Body>
+        <Modal.Body>Êtes-vous sûr de vouloir supprimer ce sondage ?</Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleCloseDelModal}>
-            Close
+            Annuler
           </Button>
           <Button variant="danger" onClick={handleDeleteSurvey}>
-            Delete
+            Supprimer
           </Button>
         </Modal.Footer>
       </Modal>
@@ -549,15 +545,15 @@ export default function SurveyCard({
         className="modals"
       >
         <Modal.Header closeButton>
-          <Modal.Title>Delete Post</Modal.Title>
+          <Modal.Title>Supprimer le sondage</Modal.Title>
         </Modal.Header>
-        <Modal.Body>Are you sure you want to delete this post?</Modal.Body>
+        <Modal.Body>Êtes-vous sûr de vouloir supprimer ce sondage ?</Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleCloseDelModal}>
-            Close
+            Annuler
           </Button>
           <Button variant="danger" onClick={handleDeleteSurvey}>
-            Delete
+            Supprimer
           </Button>
         </Modal.Footer>
       </Modal>
@@ -567,18 +563,18 @@ export default function SurveyCard({
         className="modals"
       >
         <Modal.Header closeButton>
-          <Modal.Title>Comments</Modal.Title>
+          <Modal.Title>Commentaires</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {commentUserPairs.length === 0 ? (
-            <p>No comments yet</p>
+            <p>Aucun commentaire pour l'instant</p>
           ) : (
             commentUserPairs.map(({ commnt, user }) => (
               <div className="comment" key={commnt.Comment_ID}>
                 {user && (
                   <div className="profileImgDiv-comments">
                     <ImageWithJWT
-                      imageUrl={`${hostname}/upload/${user.ProfileImage}`}
+                      imageUrl={getImageUrl(user.ProfileImage)}
                     />
                   </div>
                 )}
@@ -593,7 +589,7 @@ export default function SurveyCard({
           <MyForm className="submit-comment-form">
             <MyForm.Control
               type="text"
-              placeholder="Write a comment..."
+              placeholder="Écrire un commentaire..."
               value={comment}
               onChange={handleComment}
             />

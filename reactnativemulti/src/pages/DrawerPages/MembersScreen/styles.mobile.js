@@ -1,23 +1,18 @@
 import { StyleSheet } from 'react-native';
 
 export default StyleSheet.create({
-  container: {
-    // Styles spécifiques pour les appareils mobiles
+  container: { flex: 1, backgroundColor: '#F1F5F9' },
+  title: {
+    fontSize: 22,
+    fontWeight: '700',
+    color: '#0F172A',
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    backgroundColor: '#FFFFFF',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E2E8F0',
   },
-  editSection: {
-    // ...
+  cardsContainer: {
+    padding: 14,
   },
-  editButton: {
-    // ...
-  },
-  editButtonText: {
-    // ...
-  },
-  profileSection: {
-    // ...
-  },
-  image: {
-    // ...
-  },
-  // ... Autres styles
 });

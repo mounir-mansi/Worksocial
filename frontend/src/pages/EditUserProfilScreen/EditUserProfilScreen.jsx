@@ -23,9 +23,9 @@ function EditUserProfilScreen() {
         const response = await fetch(`${hostname}/users/${userIdLoggedIn}`, {
           method: "GET",
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("userToken")}`,
             "Content-Type": "application/json",
           },
+          credentials: 'include',
         });
 
         if (!response.ok) {
@@ -51,17 +51,17 @@ function EditUserProfilScreen() {
   }, [userId]);
 
   const initialValues = {
-    username: "",
-    lastName: "",
-    firstName: "",
-    birthDate: "",
-    address: "",
-    email: "",
+    username: user?.Username || "",
+    lastName: user?.LastName || "",
+    firstName: user?.FirstName || "",
+    birthDate: user?.BirthDate ? user.BirthDate.split("T")[0] : "",
+    address: user?.Address || "",
+    email: user?.Email || "",
     password: "",
     passwordConfirmation: "",
-    gender: "",
-    phone: "",
-    biography: "",
+    gender: user?.Gender || "",
+    phone: user?.Phone || "",
+    biography: user?.Biography || "",
     ProfileImage: null,
   };
 
@@ -131,13 +131,13 @@ function EditUserProfilScreen() {
     // }
     try {
       const response = await fetch(
-        `http://localhost:5000/users/${userIdLoggedIn}`,
+        `${hostname}/users/${userIdLoggedIn}`,
         {
           method: "PUT",
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("userToken")}`,
             "Content-Type": "application/json",
           },
+          credentials: 'include',
           body: JSON.stringify(formData),
         }
       );
@@ -145,7 +145,7 @@ function EditUserProfilScreen() {
       // Check if the response is OK (status code 200-299)
       if (response.ok) {
         // Navigate to ConnexionScreen on successful response
-        navigate("/ConnexionScreen");
+        navigate("/myprofil");
       } else {
         // If the response status is not OK, handle errors
         const contentType = response.headers.get("content-type");
@@ -193,6 +193,7 @@ function EditUserProfilScreen() {
           initialValues={initialValues}
           validationSchema={validationSchema}
           onSubmit={handleSubmit}
+          enableReinitialize
         >
           {({ setFieldValue }) => (
             <Form>
@@ -304,7 +305,6 @@ function EditUserProfilScreen() {
               <div className="profileImgDiv">
                 <ImageWithJWT
                   imageUrl={imageUrl}
-                  token={localStorage.getItem("userToken")}
                   alt="Image de Profil"
                 />
               </div>

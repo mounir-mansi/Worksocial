@@ -1,31 +1,78 @@
-// reactnativemulti/src/pages/connexionScreen/styles.mobile.js
-const styles = {
+import { StyleSheet } from 'react-native';
+
+export default StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
-    backgroundColor: '#f5f5f5',
+    padding: 28,
+    backgroundColor: '#F1F5F9',
+  },
+  logo: {
+    fontSize: 30,
+    fontWeight: '800',
+    color: '#2563EB',
+    marginBottom: 6,
+    letterSpacing: -0.5,
+  },
+  subtitle: {
+    fontSize: 14,
+    color: '#64748B',
+    marginBottom: 36,
   },
   title: {
-    fontSize: 24,
-    fontWeight: 'bold',
+    fontSize: 22,
+    fontWeight: '700',
+    color: '#0F172A',
     marginBottom: 20,
+    alignSelf: 'flex-start',
+  },
+  urlText: {
+    fontSize: 11,
+    color: '#94A3B8',
+    marginBottom: 12,
   },
   input: {
     width: '100%',
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    padding: 10,
-    marginBottom: 10,
+    height: 50,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1.5,
+    borderColor: '#E2E8F0',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    fontSize: 15,
+    color: '#0F172A',
+    marginBottom: 12,
   },
   button: {
-    marginTop: 10,
+    width: '100%',
+    height: 50,
+    backgroundColor: '#2563EB',
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 8,
+    shadowColor: '#2563EB',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  buttonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '700',
   },
   signUpLink: {
-    marginTop: 20,
-  }
-};
-
-export default styles;
+    marginTop: 24,
+    color: '#2563EB',
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  errorMessage: {
+    color: '#DC2626',
+    fontSize: 13,
+    marginBottom: 8,
+    alignSelf: 'flex-start',
+  },
+});

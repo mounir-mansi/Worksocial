@@ -20,11 +20,6 @@ router.post(
   postCommentLikesController.createPostCommentLikes
 );
 
-router.put(
-  "/postCommentLikes/:id",
-  postCommentLikesController.updatePostCommentLikes
-);
-
 router.delete(
   "/postCommentLikes/:id",
   postCommentLikesController.deletePostCommentLikes

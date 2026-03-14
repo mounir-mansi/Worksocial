@@ -1,16 +1,109 @@
 .profilePage-image img {
-  width: 150px; /* Ajustez la largeur de l'image selon vos besoins */
-  height: 150px; /* Ajustez la hauteur de l'image selon vos besoins */
+  width: 150px;
+  height: 150px;
   object-fit: cover;
-  border-radius: 50%; /* Pour rendre l'image circulaire */
-  margin-bottom: 20px; /* Espacement en bas de l'image */
-}
-
-.my-profile-container p {
-  margin: 5px 0; /* Espacement entre les paragraphes */
-  text-align: center;
+  border-radius: 50%;
+  margin-bottom: 16px;
 }
 
 .innerContainer {
   display: flex;
+  gap: 1.5em;
+  align-items: flex-start;
+}
+
+.profilePage-leftSection {
+  min-width: 240px;
+  max-width: 260px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  background: var(--card-bg, #fff);
+  border-radius: 12px;
+  padding: 1.5em 1em;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  position: sticky;
+  top: 1em;
+}
+
+.profilePage-rightSection {
+  flex: 1;
+  min-width: 0;
+}
+
+.profile-username {
+  color: #888;
+  font-size: 0.9em;
+  margin: 0 0 0.5em;
+}
+
+.profile-bio {
+  font-size: 0.95em;
+  color: #555;
+  margin-bottom: 0.5em;
+}
+
+.profile-divider {
+  width: 100%;
+  border-color: #eee;
+  margin: 0.75em 0;
+}
+
+.profile-details {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1em;
+  text-align: left;
+  width: 100%;
+}
+
+.profile-details li {
+  font-size: 0.9em;
+  color: #555;
+  padding: 4px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  word-break: break-word;
+}
+
+.profile-details li i {
+  color: #888;
+  width: 16px;
+  flex-shrink: 0;
+}
+
+.profile-stats {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  margin: 0.75em 0;
+  gap: 0.5em;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.stat-item strong {
+  font-size: 1.2em;
+  font-weight: 700;
+}
+
+.stat-item span {
+  font-size: 0.75em;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.empty-tab {
+  color: #aaa;
+  text-align: center;
+  padding: 2em 0;
+  font-style: italic;
 }

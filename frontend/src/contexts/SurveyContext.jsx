@@ -13,14 +13,11 @@ export function SurveyProvider({ children }) {
   const [votes, setVotes] = useState([]);
   const [comments, setComments] = useState([]);
   const [likes, setLikes] = useState([]);
-  const token = localStorage.getItem("userToken");
 
   const getSurveys = async () => {
     try {
       const response = await fetch(`${hostname}/surveys`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        credentials: 'include',
       });
       if (response.ok) {
         const data = await response.json();
@@ -37,9 +34,7 @@ export function SurveyProvider({ children }) {
         const response = await fetch(
           `${hostname}/surveys/${survey.Survey_ID}/votes`,
           {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+            credentials: 'include',
           }
         );
         if (response.ok) {
@@ -62,9 +57,7 @@ export function SurveyProvider({ children }) {
         const response = await fetch(
           `${hostname}/surveys/${survey.Survey_ID}/comments`,
           {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+            credentials: 'include',
           }
         );
         if (response.ok) {
@@ -87,9 +80,7 @@ export function SurveyProvider({ children }) {
         const response = await fetch(
           `${hostname}/surveys/${survey.Survey_ID}/likes`,
           {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+            credentials: 'include',
           }
         );
         if (response.ok) {

@@ -1,0 +1,44 @@
+.event-dates {
+  display: flex;
+  gap: 0.75em;
+  margin-bottom: 0.75em;
+}
+
+.event-date-field {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.event-date-field label {
+  font-size: 0.85em;
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 0.2em;
+}
+
+.title-content label {
+  font-size: 0.85em;
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 0.2em;
+  display: block;
+}
+
+#editEvent-btn {
+  width: 100%;
+  margin-top: 1em;
+  padding: 0.55em 1.2em;
+  background-color: #0d6efd;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95em;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+#editEvent-btn:hover {
+  background-color: #0b5ed7;
+}

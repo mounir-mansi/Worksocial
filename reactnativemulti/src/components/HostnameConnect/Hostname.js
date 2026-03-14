@@ -1,16 +1,18 @@
 // Hostname.js
-const LOCALHOST_IP = "http://192.168.1.62";
+import { Platform } from "react-native";
+
+// 10.0.2.2 = localhost de la machine hôte vu depuis l'émulateur Android
+// Remplacer par l'IP locale (ex: 192.168.1.X) pour un vrai téléphone
+const EMULATOR_HOST = "10.187.106.142";
 
 let settings = {
   devRunMode: 100,
   withConsole: true,
 };
-let hostname = `${LOCALHOST_IP}:5000`;
 
-// function localImageServerUrl() {
-//   // URL pour votre serveur d'images local
-//   return `${LOCALHOST_IP}:5000/assets/upload/`;
-// }
+const HOST = Platform.OS === "web" ? "localhost" : EMULATOR_HOST;
 
-// Utilisez export direct au lieu de module.exports
-export { settings, hostname };
+let hostname = `http://${HOST}:3002`;
+let wsHostname = `ws://${HOST}:3002`;
+
+export { settings, hostname, wsHostname };

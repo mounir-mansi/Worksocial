@@ -1,0 +1,369 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  User_ID             Int                 @id @default(autoincrement())
+  Username            String              @unique @db.VarChar(255)
+  LastName            String              @db.VarChar(255)
+  FirstName           String              @db.VarChar(255)
+  BirthDate           DateTime?           @db.Date
+  Age                 Int?
+  Address             String?
+  Email               String              @unique @db.VarChar(255)
+  Phone               String?             @db.VarChar(255)
+  Biography           String?
+  hashedPassword      String              @db.VarChar(255)
+  Role                UserRole            @default(User)
+  Gender              Gender
+  ProfileImage        String?
+  Created_At          DateTime            @default(now())
+  Updated_At          DateTime            @updatedAt
+  Company_ID          Int?
+  emailVerified       Boolean             @default(false)
+  blacklistedTokens   BlacklistedToken[]
+  companyUsers        CompanyUser[]
+  emailVerifications  EmailVerification[]
+  events              Event[]
+  eventCommentLikes   EventCommentLike[]
+  eventComments       EventComment[]
+  eventLikes          EventLike[]
+  groupChats          GroupChat[]
+  groupParticipations GroupParticipant[]
+  chatsAsUser1        IndividualChat[]    @relation("ChatUser1")
+  chatsAsUser2        IndividualChat[]    @relation("ChatUser2")
+  invitesReceived     InviteFriend[]      @relation("Invitee")
+  invitesSent         InviteFriend[]      @relation("Inviter")
+  posts               Post[]
+  postCommentLikes    PostCommentLike[]
+  postComments        PostComment[]
+  postLikes           PostLike[]
+  resetPasswordKeys   ResetPasswordKey[]
+  surveys             Survey[]
+  surveyCommentLikes  SurveyCommentLike[]
+  surveyComments      SurveyComment[]
+  surveyLikes         SurveyLike[]
+  surveyVotes         SurveyVote[]
+  company             Company?            @relation(fields: [Company_ID], references: [Company_ID])
+  following           UserFollower[]      @relation("Follower")
+  followedBy          UserFollower[]      @relation("Following")
+
+  @@map("user")
+}
+
+model Company {
+  Company_ID   Int           @id @default(autoincrement())
+  Name         String        @db.VarChar(255)
+  URL          String?       @db.VarChar(255)
+  Logo         String?
+  Phone        String?       @db.VarChar(255)
+  Email        String?       @db.VarChar(255)
+  Activity     String?
+  Address      String?
+  Created_At   DateTime      @default(now())
+  Updated_At   DateTime      @updatedAt
+  companyUsers CompanyUser[]
+  users        User[]
+
+  @@map("company")
+}
+
+model CompanyUser {
+  Company_ID Int
+  User_ID    Int
+  Role       String? @db.VarChar(255)
+  company    Company @relation(fields: [Company_ID], references: [Company_ID], onDelete: Cascade)
+  user       User    @relation(fields: [User_ID], references: [User_ID], onDelete: Cascade)
+
+  @@id([Company_ID, User_ID])
+  @@map("company_user")
+}
+
+model Post {
+  Post_ID    Int           @id @default(autoincrement())
+  Image      String?
+  Title      String        @db.VarChar(255)
+  Content    String
+  Visibility Visibility
+  Created_At DateTime      @default(now())
+  Updated_At DateTime      @updatedAt
+  User_ID    Int?
+  user       User?         @relation(fields: [User_ID], references: [User_ID])
+  comments   PostComment[]
+  likes      PostLike[]
+
+  @@map("post")
+}
+
+model PostComment {
+  Comment_ID Int               @id @default(autoincrement())
+  Post_ID    Int
+  User_ID    Int
+  Comment    String
+  Created_At DateTime          @default(now())
+  likes      PostCommentLike[]
+  post       Post              @relation(fields: [Post_ID], references: [Post_ID], onDelete: Cascade)
+  user       User              @relation(fields: [User_ID], references: [User_ID])
+
+  @@map("post_comments")
+}
+
+model PostLike {
+  Post_ID  Int
+  User_ID  Int
+  Liked_At DateTime @default(now())
+  post     Post     @relation(fields: [Post_ID], references: [Post_ID], onDelete: Cascade)
+  user     User     @relation(fields: [User_ID], references: [User_ID])
+
+  @@id([Post_ID, User_ID])
+  @@map("post_likes")
+}
+
+model PostCommentLike {
+  Like_ID    Int         @id @default(autoincrement())
+  Comment_ID Int
+  User_ID    Int
+  Liked_At   DateTime    @default(now())
+  comment    PostComment @relation(fields: [Comment_ID], references: [Comment_ID], onDelete: Cascade)
+  user       User        @relation(fields: [User_ID], references: [User_ID])
+
+  @@unique([Comment_ID, User_ID])
+  @@map("post_comment_likes")
+}
+
+model Event {
+  Event_ID         Int            @id @default(autoincrement())
+  Image            String?
+  EventName        String         @db.VarChar(255)
+  StartDate        DateTime       @db.Date
+  EndDate          DateTime?      @db.Date
+  StartTime        DateTime?      @db.Time(6)
+  EndTime          DateTime?      @db.Time(6)
+  Description      String?
+  Visibility       Visibility
+  ParticipantCount Int?           @default(0)
+  Created_At       DateTime       @default(now())
+  Updated_At       DateTime       @updatedAt
+  User_ID          Int?
+  user             User?          @relation(fields: [User_ID], references: [User_ID])
+  comments         EventComment[]
+  likes            EventLike[]
+
+  @@map("event")
+}
+
+model EventComment {
+  Comment_ID Int                @id @default(autoincrement())
+  Event_ID   Int
+  User_ID    Int
+  Comment    String
+  Created_At DateTime           @default(now())
+  likes      EventCommentLike[]
+  event      Event              @relation(fields: [Event_ID], references: [Event_ID], onDelete: Cascade)
+  user       User               @relation(fields: [User_ID], references: [User_ID])
+
+  @@map("event_comments")
+}
+
+model EventLike {
+  Event_ID Int
+  User_ID  Int
+  Liked_At DateTime @default(now())
+  event    Event    @relation(fields: [Event_ID], references: [Event_ID], onDelete: Cascade)
+  user     User     @relation(fields: [User_ID], references: [User_ID])
+
+  @@id([Event_ID, User_ID])
+  @@map("event_likes")
+}
+
+model EventCommentLike {
+  Like_ID    Int          @id @default(autoincrement())
+  Comment_ID Int
+  User_ID    Int
+  Liked_At   DateTime     @default(now())
+  comment    EventComment @relation(fields: [Comment_ID], references: [Comment_ID], onDelete: Cascade)
+  user       User         @relation(fields: [User_ID], references: [User_ID])
+
+  @@unique([Comment_ID, User_ID])
+  @@map("event_comment_likes")
+}
+
+model Survey {
+  Survey_ID  Int             @id @default(autoincrement())
+  Image      String?
+  Title      String          @db.VarChar(255)
+  Content    String
+  Visibility Visibility
+  EndDate    DateTime?       @db.Date
+  Created_At DateTime        @default(now())
+  Updated_At DateTime        @updatedAt
+  User_ID    Int?
+  Option1    String          @db.VarChar(255)
+  Option2    String          @db.VarChar(255)
+  Option3    String?         @db.VarChar(255)
+  Option4    String?         @db.VarChar(255)
+  user       User?           @relation(fields: [User_ID], references: [User_ID])
+  comments   SurveyComment[]
+  likes      SurveyLike[]
+  votes      SurveyVote[]
+
+  @@map("survey")
+}
+
+model SurveyComment {
+  Comment_ID Int                 @id @default(autoincrement())
+  Survey_ID  Int
+  User_ID    Int
+  Comment    String
+  Created_At DateTime            @default(now())
+  likes      SurveyCommentLike[]
+  survey     Survey              @relation(fields: [Survey_ID], references: [Survey_ID], onDelete: Cascade)
+  user       User                @relation(fields: [User_ID], references: [User_ID])
+
+  @@map("survey_comments")
+}
+
+model SurveyLike {
+  Survey_ID Int
+  User_ID   Int
+  Liked_At  DateTime @default(now())
+  survey    Survey   @relation(fields: [Survey_ID], references: [Survey_ID], onDelete: Cascade)
+  user      User     @relation(fields: [User_ID], references: [User_ID])
+
+  @@id([Survey_ID, User_ID])
+  @@map("survey_likes")
+}
+
+model SurveyCommentLike {
+  Like_ID    Int           @id @default(autoincrement())
+  Comment_ID Int
+  User_ID    Int
+  Liked_At   DateTime      @default(now())
+  comment    SurveyComment @relation(fields: [Comment_ID], references: [Comment_ID], onDelete: Cascade)
+  user       User          @relation(fields: [User_ID], references: [User_ID])
+
+  @@unique([Comment_ID, User_ID])
+  @@map("survey_comment_likes")
+}
+
+model SurveyVote {
+  Survey_ID   Int
+  User_ID     Int
+  Voted_For   String   @db.VarChar(10)
+  create_time DateTime @default(now())
+  survey      Survey   @relation(fields: [Survey_ID], references: [Survey_ID], onDelete: Cascade)
+  user        User     @relation(fields: [User_ID], references: [User_ID])
+
+  @@id([Survey_ID, User_ID])
+  @@map("survey_votes")
+}
+
+model IndividualChat {
+  Chat_ID    Int      @id @default(autoincrement())
+  Content    String
+  Created_At DateTime @default(now())
+  Updated_At DateTime @updatedAt
+  User_ID1   Int?
+  User_ID2   Int?
+  user1      User?    @relation("ChatUser1", fields: [User_ID1], references: [User_ID])
+  user2      User?    @relation("ChatUser2", fields: [User_ID2], references: [User_ID])
+
+  @@map("individualchat")
+}
+
+model GroupChat {
+  GroupChat_ID Int                @id @default(autoincrement())
+  GroupImage   String?
+  GroupName    String             @db.VarChar(255)
+  Content      String
+  Created_At   DateTime           @default(now())
+  Updated_At   DateTime           @updatedAt
+  User_ID      Int?
+  user         User?              @relation(fields: [User_ID], references: [User_ID])
+  participants GroupParticipant[]
+
+  @@map("groupchat")
+}
+
+model GroupParticipant {
+  GroupChat_ID Int
+  User_ID      Int
+  Joined_At    DateTime  @default(now())
+  groupChat    GroupChat @relation(fields: [GroupChat_ID], references: [GroupChat_ID], onDelete: Cascade)
+  user         User      @relation(fields: [User_ID], references: [User_ID])
+
+  @@id([GroupChat_ID, User_ID])
+  @@map("groupparticipants")
+}
+
+model BlacklistedToken {
+  id        Int      @id @default(autoincrement())
+  jwtToken  String   @db.VarChar(500)
+  User_ID   Int?
+  createdAt DateTime @default(now())
+  user      User?    @relation(fields: [User_ID], references: [User_ID], onDelete: Cascade)
+
+  @@map("blacklisted_tokens")
+}
+
+model EmailVerification {
+  verification_id   Int      @id @default(autoincrement())
+  User_ID           Int
+  verification_code String   @db.VarChar(255)
+  expires_at        DateTime
+  user              User     @relation(fields: [User_ID], references: [User_ID], onDelete: Cascade)
+
+  @@map("email_verification")
+}
+
+model ResetPasswordKey {
+  unique_key String   @id @db.VarChar(80)
+  Email      String   @db.VarChar(255)
+  created_at DateTime @default(now())
+  expires_at DateTime @default(dbgenerated("(now() + '00:15:00'::interval)"))
+  user       User     @relation(fields: [Email], references: [Email], onDelete: Cascade)
+
+  @@map("reset_password_keys")
+}
+
+model UserFollower {
+  Follower_ID  Int
+  Following_ID Int
+  Followed_At  DateTime @default(now())
+  follower     User     @relation("Follower", fields: [Follower_ID], references: [User_ID])
+  following    User     @relation("Following", fields: [Following_ID], references: [User_ID])
+
+  @@id([Follower_ID, Following_ID])
+  @@map("user_followers")
+}
+
+model InviteFriend {
+  invite_id  Int      @id @default(autoincrement())
+  inviter_id Int
+  invitee_id Int
+  sent_at    DateTime @default(now())
+  invitee    User     @relation("Invitee", fields: [invitee_id], references: [User_ID], onDelete: Cascade)
+  inviter    User     @relation("Inviter", fields: [inviter_id], references: [User_ID], onDelete: Cascade)
+
+  @@map("inviteFriends")
+}
+
+enum UserRole {
+  Admin
+  User
+}
+
+enum Gender {
+  Male
+  Female
+  Other
+}
+
+enum Visibility {
+  Public
+  Private
+}

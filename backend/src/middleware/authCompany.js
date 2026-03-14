@@ -1,8 +1,6 @@
 const argon2 = require("argon2");
 const jwt = require("jsonwebtoken");
-// const cookie = require("cookie");
-
-const models = require("../models");
+const prisma = require("../lib/prisma");
 
 const hashingOptions = {
   type: argon2.argon2id,
@@ -12,7 +10,6 @@ const hashingOptions = {
 };
 
 const hashPass = async (req, res, next) => {
-  // hash the password using argon2 then call next()
   try {
     const hash = await argon2.hash(req.body.Password, hashingOptions);
     req.body.HashedPassword = hash;
@@ -26,28 +23,15 @@ const hashPass = async (req, res, next) => {
 
 const verifyPassword = async (req, res) => {
   try {
-    // Vérifier si req.company est défini
     if (!req.company || !req.company.HashedPassword) {
-      console.error(
-        "Erreur: req.company non défini ou ne contient pas hashedPassword"
-      );
+      console.error("Erreur: req.company non défini ou ne contient pas hashedPassword");
       return res.sendStatus(500);
     }
-    const isVerified = await argon2.verify(
-      req.company.HashedPassword,
-      req.body.Password
-    );
+    const isVerified = await argon2.verify(req.company.HashedPassword, req.body.Password);
     if (isVerified) {
       const payload = { sub: req.company.Company_ID };
-      const token = jwt.sign(payload, process.env.JWT_SECRET, {
-        expiresIn: "4h",
-      });
-
-      res.status(200).send({
-        authToken: token,
-        company: req.company,
-        message: "Login successful",
-      });
+      const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "4h" });
+      res.status(200).send({ authToken: token, company: req.company, message: "Login successful" });
     } else {
       res.status(401).send("Incorrect password");
     }
@@ -61,34 +45,24 @@ const verifyPassword = async (req, res) => {
 const verifyToken = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
-    // console.info(authHeader);
     if (!authHeader) {
-      return res
-        .status(401)
-        .send("Vous n'avez pas d'autorisation de voir cette ressource");
+      return res.status(401).send("Vous n'avez pas d'autorisation de voir cette ressource");
     }
-
     if (!authHeader.startsWith("Bearer ")) {
-      return res
-        .status(401)
-        .send({ message: "Authorisation Header is not of the type 'Bearer'" });
+      return res.status(401).send({ message: "Authorisation Header is not of the type 'Bearer'" });
     }
-
     const token = authHeader.replace(/^Bearer\s+/, "");
 
-    // Check for blacklisted tokens
-    const [result] = await models.tokenBlacklist.findByToken(token);
-    if (result.length > 0) {
+    const blacklisted = await prisma.blacklistedToken.findFirst({ where: { jwtToken: token } });
+    if (blacklisted) {
       return res.status(401).send("Session Expired. Please log in again.");
     }
 
-    // Wrap jwt.verify in a Promise
     await new Promise((resolve, reject) => {
       // eslint-disable-next-line consistent-return
       jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
         if (err) {
           console.error("JWT verification error:", err);
-
           return reject(new Error("Unauthorized"));
         }
         req.Company_ID = decoded.sub;
@@ -103,27 +77,17 @@ const verifyToken = async (req, res, next) => {
   }
   return null;
 };
+
 const blacklistToken = async (req, res) => {
-  const token = req.headers.authorization.replace(/^Bearer\s+/, "");
-  await models.tokenBlacklist
-    .insert(token)
-    .then(([result]) => {
-      if (result.affectedRows === 0) {
-        res.sendStatus(404);
-      } else {
-        res.sendStatus(204);
-      }
-    })
-    .catch((err) => {
-      console.error(err);
-      res.sendStatus(500);
-    });
+  try {
+    const token = req.headers.authorization.replace(/^Bearer\s+/, "");
+    await prisma.blacklistedToken.create({ data: { jwtToken: token } });
+    res.sendStatus(204);
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
   return null;
 };
 
-module.exports = {
-  hashPass,
-  verifyPassword,
-  verifyToken,
-  blacklistToken,
-};
+module.exports = { hashPass, verifyPassword, verifyToken, blacklistToken };

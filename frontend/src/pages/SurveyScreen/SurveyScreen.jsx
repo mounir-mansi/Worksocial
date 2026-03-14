@@ -1,6 +1,7 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Formik, Form, Field } from "formik";
 import Button from "react-bootstrap/Button";
+import Modal from "react-bootstrap/Modal";
 import UserBar from "../../components/UserBar/UserBar";
 import SurveyCard from "../../components/Surveys/SurveyCard";
 import "./SurveyScreen.css";
@@ -8,6 +9,7 @@ import { useSurvey } from "../../contexts/SurveyContext";
 import { hostname } from "../../HostnameConnect/Hostname";
 
 export default function SurveyScreen() {
+  const [showModal, setShowModal] = useState(false);
   const {
     surveys,
     getSurveys,
@@ -26,7 +28,6 @@ export default function SurveyScreen() {
     getLikes();
   }, []);
 
-  const token = localStorage.getItem("userToken");
   const userID = localStorage.getItem("userId");
 
   surveys.sort((a, b) => (b.Updated_At > a.Updated_At ? 1 : -1));
@@ -71,9 +72,7 @@ export default function SurveyScreen() {
       const response = await fetch(`${hostname}/surveys`, {
         method: "POST",
         body: formData,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        credentials: 'include',
       });
       if (response.ok) {
         console.info("Survey Created");
@@ -113,72 +112,50 @@ export default function SurveyScreen() {
       </div>
       <div className="sidebar">
         <div className="sidebar-item">
-          <h3>Create Survey</h3>
-          <Formik initialValues={initialValues} onSubmit={handleCreateSurvey}>
+          <h3>Sondages</h3>
+          <Button onClick={() => setShowModal(true)} style={{ width: "100%" }}>
+            <i className="fas fa-plus" /> Nouveau sondage
+          </Button>
+        </div>
+      </div>
+      <Modal show={showModal} onHide={() => setShowModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Créer un sondage</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Formik initialValues={initialValues} onSubmit={async (values, { resetForm }) => { await handleCreateSurvey(values); resetForm(); setShowModal(false); }}>
             {({ setFieldValue }) => (
               <Form>
                 <div className="title-content">
-                  <Field
-                    name="Title"
-                    placeholder="Title"
-                    type="text"
-                    className="form-control"
-                  />
-
-                  <Field
-                    name="Content"
-                    component="textarea"
-                    rows="3"
-                    placeholder="Write Survey"
-                    className="form-control"
-                  />
+                  <Field name="Title" placeholder="Titre" type="text" className="form-control" />
+                  <Field name="Content" component="textarea" rows="3" placeholder="Description" className="form-control" />
                 </div>
                 <div className="visibility-group">
-                  <Field
-                    name="Visibility"
-                    type="radio"
-                    value="Public"
-                    className="form-check-input"
-                  />
+                  <Field name="Visibility" type="radio" value="Public" className="form-check-input" />
                   <label htmlFor="Visibility">Public</label>
-
-                  <Field
-                    name="Visibility"
-                    type="radio"
-                    value="Private"
-                    className="form-check-input"
-                  />
-                  <label htmlFor="Visibility">Private</label>
+                  <Field name="Visibility" type="radio" value="Private" className="form-check-input" />
+                  <label htmlFor="Visibility">Privé</label>
                 </div>
                 <div className="options-group">
-                  <label htmlFor="Option1">Option 1</label>
+                  <label>Option 1</label>
                   <Field name="Option1" type="text" className="form-control" />
-                  <label htmlFor="Option2">Option 2</label>
+                  <label>Option 2</label>
                   <Field name="Option2" type="text" className="form-control" />
-                  <label htmlFor="Option3">Option 3</label>
+                  <label>Option 3</label>
                   <Field name="Option3" type="text" className="form-control" />
-                  <label htmlFor="Options4">Option 4</label>
+                  <label>Option 4</label>
                   <Field name="Option4" type="text" className="form-control" />
                 </div>
                 <div className="img-upload">
-                  <label htmlFor="Image">
-                    <i className="fa-solid fa-image" /> Attach Image
-                  </label>
-                  <input
-                    id="Image"
-                    name="Image"
-                    type="file"
-                    onChange={(event) =>
-                      setFieldValue("Image", event.currentTarget.files[0])
-                    }
-                  />
+                  <label htmlFor="Image"><i className="fa-solid fa-image" /> Joindre une image</label>
+                  <input id="Image" name="Image" type="file" onChange={(e) => setFieldValue("Image", e.currentTarget.files[0])} />
                 </div>
-                <Button type="submit">Create</Button>
+                <Button type="submit" style={{ marginTop: "1em", width: "100%" }}>Créer</Button>
               </Form>
             )}
           </Formik>
-        </div>
-      </div>
+        </Modal.Body>
+      </Modal>
     </div>
   );
 }

@@ -1,38 +1,34 @@
-const models = require("../models");
+const prisma = require("../lib/prisma");
 
-const getSurveyComments = (req, res) => {
-  const surveyID = parseInt(req.params.surveyID, 10);
-
-  models.surveyComments
-    .findBySurveyId(surveyID)
-    .then(([rows]) => {
-      res.send(rows);
-    })
-    .catch((err) => {
-      console.error(err);
-      res.sendStatus(500);
+const getSurveyComments = async (req, res) => {
+  try {
+    const surveyID = parseInt(req.params.surveyID, 10);
+    const comments = await prisma.surveyComment.findMany({
+      where: { Survey_ID: surveyID },
+      orderBy: { Created_At: "asc" },
     });
+    res.send(comments);
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
 };
 
-const getSurveyCommentByID = (req, res) => {
-  const commentID = parseInt(req.params.id, 10);
-
-  models.surveyComments
-    .findByPK(commentID)
-    .then(([rows]) => {
-      if (rows.length === 0) {
-        res.sendStatus(404);
-      } else {
-        res.send(rows[0]);
-      }
-    })
-    .catch((err) => {
-      console.error(err);
-      res.sendStatus(500);
+const getSurveyCommentByID = async (req, res) => {
+  try {
+    const comment = await prisma.surveyComment.findUnique({
+      where: { Comment_ID: parseInt(req.params.id, 10) },
     });
+    if (!comment) return res.sendStatus(404);
+    res.send(comment);
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
+  return null;
 };
 
-const createSurveyComment = (req, res) => {
+const createSurveyComment = async (req, res) => {
   const surveyComment = req.body.comment;
   const surveyID = parseInt(req.params.surveyID, 10);
   const userID = req.User_ID;
@@ -42,54 +38,37 @@ const createSurveyComment = (req, res) => {
     return;
   }
 
-  models.surveyComments
-    .insert(surveyID, userID, surveyComment)
-    .then(([result]) => {
-      res
-        .location(`/surveys/${surveyID}/comments/${result.insertId}`)
-        .status(201)
-        .send("Comment added");
-    })
-    .catch((err) => {
-      console.error(err);
-      res.sendStatus(500);
+  try {
+    const comment = await prisma.surveyComment.create({
+      data: { Survey_ID: surveyID, User_ID: userID, Comment: surveyComment },
     });
+    res.location(`/surveys/${surveyID}/comments/${comment.Comment_ID}`).status(201).send("Comment added");
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
 };
 
-const updateSurveyComment = (req, res) => {
-  const comment = req.body;
-  const commentID = parseInt(req.params.id, 10);
-
-  // If User is owner of the comment, proceed to update the comment
-  models.surveyComments
-    .update(commentID, comment)
-    .then(() => {
-      res.status(204).send("Comment updated");
-    })
-    .catch((err) => {
-      console.error(err);
-      res.sendStatus(500);
-    });
+const updateSurveyComment = async (req, res) => {
+  try {
+    const commentID = parseInt(req.params.id, 10);
+    const { Comment } = req.body;
+    await prisma.surveyComment.update({ where: { Comment_ID: commentID }, data: { Comment } });
+    res.sendStatus(204);
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
 };
 
-const deleteSurveyComment = (req, res) => {
-  const commentID = parseInt(req.params.id, 10);
-
-  models.surveyComments
-    .delete(commentID)
-    .then(() => {
-      res.status(204).send("Comment deleted");
-    })
-    .catch((err) => {
-      console.error(err);
-      res.sendStatus(500);
-    });
+const deleteSurveyComment = async (req, res) => {
+  try {
+    await prisma.surveyComment.delete({ where: { Comment_ID: parseInt(req.params.id, 10) } });
+    res.sendStatus(204);
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
 };
 
-module.exports = {
-  getSurveyComments,
-  getSurveyCommentByID,
-  createSurveyComment,
-  updateSurveyComment,
-  deleteSurveyComment,
-};
+module.exports = { getSurveyComments, getSurveyCommentByID, createSurveyComment, updateSurveyComment, deleteSurveyComment };

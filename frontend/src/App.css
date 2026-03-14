@@ -10,6 +10,19 @@ code {
     monospace;
 }
 
+.title-content .form-control,
+.options-group .form-control {
+  margin-bottom: 0.75em;
+}
+
+.options-group label {
+  font-size: 0.85em;
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 0.2em;
+  display: block;
+}
+
 .page-title {
   font-size: 3em;
   font-weight: 300;
@@ -106,20 +119,29 @@ code {
   color: #61dafb;
 }
 
+.card {
+  position: relative;
+}
+
 .card:hover {
   transform: translateY(-5px);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1;
 }
 
 .card-text {
   font-size: 0.9em;
 }
 
+.card-img {
+  height: 350px;
+  overflow: hidden;
+}
+
 .card-img img {
   width: 100%;
-  height: 200px;
+  height: 100%;
   object-fit: cover;
-  /* border-radius: 5px 5px 0 0; */
 }
 
 .action-btn {

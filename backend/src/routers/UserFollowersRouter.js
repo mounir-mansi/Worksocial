@@ -13,8 +13,6 @@ router.get("/userFollowerss/:id", userFollowersController.getUserFollowersByID);
 
 router.post("/userFollowerss", userFollowersController.createUserFollowers);
 
-router.put("/userFollowerss/:id", userFollowersController.updateUserFollowers);
-
 router.delete(
   "/userFollowerss/:id",
   userFollowersController.deleteUserFollowers

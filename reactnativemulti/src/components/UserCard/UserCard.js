@@ -60,13 +60,12 @@ const handleCardClick = () => {
           <Text style={styles.userName}>
             {user.FirstName} {user.LastName}
           </Text>
-          <Text>Age: {user.Age}</Text>
-          <Text>{translateGender(user.Gender)}</Text>
+          <Text style={styles.userDetail}>{user.Age} ans · {translateGender(user.Gender)}</Text>
           {showChatButton && userIdLoggedIn && userIdLoggedIn !== String(user.User_ID) && (
-          <TouchableOpacity onPress={handleChatClick} style={styles.chatButton}>
-           <Text>Chat</Text>
-           </TouchableOpacity>
-)}
+            <TouchableOpacity onPress={handleChatClick} style={styles.chatButton}>
+              <Text style={styles.chatButtonText}>💬 Chat</Text>
+            </TouchableOpacity>
+          )}
         </View>
        </TouchableOpacity>
       {isChatWebSocketOpen && (

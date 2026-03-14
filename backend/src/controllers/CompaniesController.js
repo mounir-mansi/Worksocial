@@ -1,75 +1,41 @@
-const models = require("../models");
+const prisma = require("../lib/prisma");
 
-const getCompanies = (req, res) => {
-  models.company
-    .findAll()
-    .then(([rows]) => {
-      res.send(rows);
-    })
-    .catch((err) => {
-      console.error(err);
-      res.sendStatus(500);
-    });
-};
-
-const getCompanyByID = (req, res) => {
-  models.company
-    .find(req.params.id)
-    .then(([rows]) => {
-      if (rows[0] == null) {
-        res.sendStatus(404);
-      } else {
-        res.send(rows[0]);
-      }
-    })
-    .catch((err) => {
-      console.error(err);
-      res.sendStatus(500);
-    });
-};
-
-const createCompany = (req, res) => {
-  const Company = req.body;
-
-  if (req.file) {
-    Company.Logo = req.file.filename; // Utilisez seulement le nom du fichier
+const getCompanies = async (_req, res) => {
+  try {
+    const companies = await prisma.company.findMany();
+    res.send(companies);
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
   }
+};
 
-  models.company
-    .insert(Company)
-    .then(([result]) => {
-      res.location(`/companies/${result.insertId}`).sendStatus(201);
-    })
-    .catch((err) => {
-      console.error("Erreur lors de la création de l'entreprise :", err);
-      res.sendStatus(500);
+const getCompanyByID = async (req, res) => {
+  try {
+    const company = await prisma.company.findUnique({
+      where: { Company_ID: parseInt(req.params.id, 10) },
     });
+    if (!company) return res.sendStatus(404);
+    res.send(company);
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
+  return null;
 };
 
-// const updateCompany = (req, res) => {
-//   const company = req.body;
-//   const companyID = req.Company_ID;
-
-//   company.id = parseInt(req.params.id, 10);
-
-//   models.company
-//     .update(company, companyID)
-//     .then(([result]) => {
-//       if (result.affectedRows === 0) {
-//         res.sendStatus(404);
-//       } else {
-//         res.sendStatus(204);
-//       }
-//     })
-//     .catch((err) => {
-//       console.error(err);
-//       res.sendStatus(500);
-//     });
-// };
-
-module.exports = {
-  getCompanies,
-  getCompanyByID,
-  createCompany,
-  // updateCompany,
+const createCompany = async (req, res) => {
+  try {
+    const { Name, URL, Phone, Email, Activity, Address } = req.body;
+    const Logo = req.file ? req.file.filename : null;
+    const company = await prisma.company.create({
+      data: { Name, URL, Phone, Email, Activity, Address, Logo },
+    });
+    res.location(`/companies/${company.Company_ID}`).sendStatus(201);
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
 };
+
+module.exports = { getCompanies, getCompanyByID, createCompany };

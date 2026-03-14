@@ -17,12 +17,11 @@ export function AuthProvider({ children }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem("userToken");
-    setIsLoggedIn(!!token);
+    const userId = localStorage.getItem("userId");
+    setIsLoggedIn(!!userId);
   }, []);
 
   const login = (token, userId) => {
-    localStorage.setItem("userToken", token);
     localStorage.setItem("userId", userId);
     setIsLoggedIn(true);
   };

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { View, Text, TextInput, TouchableOpacity, ScrollView,Platform} from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { hostname } from '../../../components/HostnameConnect/Hostname';
+import { hostname, wsHostname } from '../../../components/HostnameConnect/Hostname';
 
 const styles = Platform.OS === 'web'
   ? require('./styles.web').default
@@ -30,23 +30,21 @@ const scrollViewRef = useRef(null);
     fetchUserData();
   }, []);
 
-  // Établissement de la connexion WebSocket
+  // Établissement de la connexion WebSocket (uniquement quand le token est disponible)
   useEffect(() => {
-    ws.current = new WebSocket("ws://192.168.1.62:5001");
- console.log("ws.current:", ws.current);
+    if (!token) return;
+
+    ws.current = new WebSocket(wsHostname);
+
     ws.current.onopen = () => {
       console.info("WebSocket connected");
-      // Envoyer un message initial pour identifier l'utilisateur
-      ws.current.send(
-        JSON.stringify({ type: "init", userId: parseInt(userIdSend, 10) })
-      );
+      ws.current.send(JSON.stringify({ type: "init", token }));
     };
 
     ws.current.onmessage = (event) => {
       const receivedMessage = JSON.parse(event.data);
       if (receivedMessage && receivedMessage.Content) {
-        // Vérifiez si l'utilisateur actuel est l'expéditeur
-        if (receivedMessage.user_ID1 !== parseInt(userIdSend, 10)) {
+        if (receivedMessage.User_ID1 !== parseInt(userIdSend, 10)) {
           setMessages((prevMessages) => [...prevMessages, receivedMessage]);
         }
       }
@@ -59,7 +57,7 @@ const scrollViewRef = useRef(null);
         ws.current.close();
       }
     };
-  }, []);
+  }, [token]);
 
   // Charger les messages historiques
  useEffect(() => {
@@ -107,8 +105,7 @@ const scrollViewRef = useRef(null);
     if (currentMessage.trim() !== "") {
       const messageToSend = {
         Content: currentMessage,
-        user_ID1: parseInt(userIdSend, 10),
-        user_ID2: userId,
+        user_ID2: parseInt(userId, 10),
       };
 
       ws.current.send(JSON.stringify(messageToSend)); // Convertit l'objet en chaîne JSON

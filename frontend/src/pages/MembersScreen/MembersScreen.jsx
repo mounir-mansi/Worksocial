@@ -26,7 +26,7 @@ function MembersScreen() {
     <div className="container">
       <UserBar />
       <div className="content-area">
-        <h2 className="page-title">Members</h2>
+        <h2 className="page-title">Membres</h2>
         <div className="userlist">
           {users.map((user) => {
             const chatInfo = openChats.find(

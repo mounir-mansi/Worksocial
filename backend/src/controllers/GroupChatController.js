@@ -1,64 +1,51 @@
-// GroupChatController.js
-const GroupChatManager = require("../models/Manager/GroupChatManager");
+const prisma = require("../lib/prisma");
 
-const GroupChatController = {
-  getAllGroupChats: (req, res) => {
-    GroupChatManager.findAll()
-      .then(([rows]) => {
-        res.send(rows);
-      })
-      .catch((err) => {
-        console.error(err);
-        res.sendStatus(500);
-      });
-  },
-
-  getGroupChatById: (req, res) => {
-    const { groupChatId } = req.params;
-
-    GroupChatManager.find(groupChatId)
-      .then(([rows]) => {
-        if (rows.length === 0) {
-          res.sendStatus(404);
-        } else {
-          res.send(rows[0]);
-        }
-      })
-      .catch((err) => {
-        console.error(err);
-        res.sendStatus(500);
-      });
-  },
-
-  createGroupChat: (req, res) => {
-    const groupChat = req.body;
-
-    GroupChatManager.insert(groupChat)
-      .then(([result]) => {
-        res.location(`/groupchats/${result.insertId}`).sendStatus(201);
-      })
-      .catch((err) => {
-        console.error(err);
-        res.sendStatus(500);
-      });
-  },
-
-  deleteGroupChat: (req, res) => {
-    const { groupChatId } = req.params;
-
-    GroupChatManager.delete(groupChatId)
-      .then(([result]) => {
-        if (result.affectedRows === 0) {
-          res.sendStatus(404);
-        } else {
-          res.sendStatus(204);
-        }
-      })
-      .catch((err) => {
-        console.error(err);
-        res.sendStatus(500);
-      });
-  },
+const getAllGroupChats = async (_req, res) => {
+  try {
+    const chats = await prisma.groupChat.findMany();
+    res.send(chats);
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
 };
 
-module.exports = GroupChatController;
+const getGroupChatById = async (req, res) => {
+  try {
+    const chat = await prisma.groupChat.findUnique({
+      where: { GroupChat_ID: parseInt(req.params.groupChatId, 10) },
+    });
+    if (!chat) return res.sendStatus(404);
+    res.send(chat);
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
+  return null;
+};
+
+const createGroupChat = async (req, res) => {
+  try {
+    const { GroupName, Content } = req.body;
+    const User_ID = parseInt(req.body.User_ID, 10);
+    const chat = await prisma.groupChat.create({ data: { GroupName, Content, User_ID } });
+    res.location(`/groupchats/${chat.GroupChat_ID}`).sendStatus(201);
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
+};
+
+const deleteGroupChat = async (req, res) => {
+  try {
+    await prisma.groupChat.delete({
+      where: { GroupChat_ID: parseInt(req.params.groupChatId, 10) },
+    });
+    res.sendStatus(204);
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
+};
+
+module.exports = { getAllGroupChats, getGroupChatById, createGroupChat, deleteGroupChat };

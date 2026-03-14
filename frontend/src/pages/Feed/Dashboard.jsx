@@ -28,7 +28,7 @@ export default function Dashboard() {
       <UserBar />
       <div className="content-area">
         <div>
-          <h4>Upcoming Events</h4>
+          <h4>Événements à venir</h4>
           <hr />
           {upcomingEvents.length > 0 ? (
             upcomingEvents.map((event) => {
@@ -46,7 +46,7 @@ export default function Dashboard() {
               );
             })
           ) : (
-            <p>No upcoming events</p>
+            <p>Aucun événement à venir</p>
           )}
         </div>
       </div>

@@ -12,7 +12,7 @@ function DropdownMenu({ userName, onLogout }) {
       <Dropdown.Toggle id="dropdown-basic">👋 {userName}</Dropdown.Toggle>
       <Dropdown.Menu className="custom-dropdown-menu">
         <LinkContainer to={`/profile/${userId}`}>
-          <Dropdown.Item>Profile</Dropdown.Item>
+          <Dropdown.Item>Profil</Dropdown.Item>
         </LinkContainer>
         <Dropdown.Item onClick={onLogout}>Déconnexion</Dropdown.Item>
       </Dropdown.Menu>

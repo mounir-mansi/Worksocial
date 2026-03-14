@@ -1,12 +1,13 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Formik, Form, Field } from "formik";
-import { Button } from "react-bootstrap";
+import { Button, Modal } from "react-bootstrap";
 import EventCard from "../../components/Events/EventCard";
 import UserBar from "../../components/UserBar/UserBar";
 import { useEvent } from "../../contexts/EventContext";
 import { hostname } from "../../HostnameConnect/Hostname";
 
 export default function EventScreen() {
+  const [showModal, setShowModal] = useState(false);
   const { events, getEvents, comments, getComments, likes, getLikes } =
     useEvent();
 
@@ -16,7 +17,6 @@ export default function EventScreen() {
     getComments();
   }, []);
 
-  const token = localStorage.getItem("userToken");
   const userID = localStorage.getItem("userId");
 
   events.sort((a, b) => (b.Updated_At > a.Updated_At ? 1 : -1));
@@ -61,9 +61,7 @@ export default function EventScreen() {
       await fetch(`${hostname}/events`, {
         method: "POST",
         body: formData,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        credentials: 'include',
       }).then((res) => {
         if (res.ok) {
           getEvents();
@@ -99,92 +97,54 @@ export default function EventScreen() {
       </div>
       <div className="sidebar">
         <div className="sidebar-item">
-          <h3>Create Event</h3>
-          <Formik initialValues={initialValues} onSubmit={handleCreateEvent}>
+          <h3>Événements</h3>
+          <Button onClick={() => setShowModal(true)} style={{ width: "100%" }}>
+            <i className="fas fa-plus" /> Nouvel événement
+          </Button>
+        </div>
+      </div>
+      <Modal show={showModal} onHide={() => setShowModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Créer un événement</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Formik initialValues={initialValues} onSubmit={async (values, { resetForm }) => { await handleCreateEvent(values); resetForm(); setShowModal(false); }}>
             {({ setFieldValue }) => (
               <Form>
                 <div className="title-content">
-                  <label htmlFor="EventName">Event Name</label>
-                  <Field
-                    name="EventName"
-                    placeholder="Event Name"
-                    type="text"
-                    className="form-control"
-                  />
-
-                  <label htmlFor="StartDate">Start Date</label>
-                  <Field
-                    name="StartDate"
-                    placeholder="Start Date"
-                    type="date"
-                    className="form-control"
-                  />
-
-                  <label htmlFor="EndDate">End Date</label>
-                  <Field
-                    name="EndDate"
-                    placeholder="End Date"
-                    type="date"
-                    className="form-control"
-                  />
-
-                  <label htmlFor="StartTime">Start Time</label>
-                  <Field
-                    name="StartTime"
-                    placeholder="Start Time"
-                    type="time"
-                    className="form-control"
-                  />
-
-                  <label htmlFor="EndTime">End Time</label>
-                  <Field
-                    name="EndTime"
-                    placeholder="End Time"
-                    type="time"
-                    className="form-control"
-                  />
-
-                  <label htmlFor="Description">Description</label>
-                  <Field
-                    name="Description"
-                    component="textarea"
-                    rows="5"
-                    placeholder="Description"
-                    className="form-control"
-                  />
+                  <label>Nom de l'événement</label>
+                  <Field name="EventName" placeholder="Nom" type="text" className="form-control" />
+                  <label>Date de début</label>
+                  <Field name="StartDate" type="date" className="form-control" />
+                  <label>Date de fin</label>
+                  <Field name="EndDate" type="date" className="form-control" />
+                  <label>Heure de début</label>
+                  <Field name="StartTime" type="time" className="form-control" />
+                  <label>Heure de fin</label>
+                  <Field name="EndTime" type="time" className="form-control" />
+                  <label>Description</label>
+                  <Field name="Description" component="textarea" rows="4" placeholder="Description" className="form-control" />
                 </div>
                 <div className="visibility-group">
                   <div className="radio-group">
                     <Field name="Visibility" type="radio" value="Public" />
-                    <label htmlFor="Visibility">Public</label>
+                    <label>Public</label>
                   </div>
                   <div className="radio-group">
                     <Field name="Visibility" type="radio" value="Private" />
-                    <label htmlFor="Visibility">Private</label>
+                    <label>Privé</label>
                   </div>
                 </div>
-
                 <div className="img-upload">
-                  <label htmlFor="Image">
-                    <i className="fa-solid fa-image" /> Attach Image
-                  </label>
-                  <input
-                    id="Image"
-                    name="Image"
-                    type="file"
-                    onChange={(event) =>
-                      setFieldValue("Image", event.currentTarget.files[0])
-                    }
-                  />
+                  <label htmlFor="Image"><i className="fa-solid fa-image" /> Joindre une image</label>
+                  <input id="Image" name="Image" type="file" onChange={(e) => setFieldValue("Image", e.currentTarget.files[0])} />
                 </div>
-                <Button id="createEvent-btn" type="submit">
-                  Create
-                </Button>
+                <Button type="submit" style={{ marginTop: "1em", width: "100%" }}>Créer</Button>
               </Form>
             )}
           </Formik>
-        </div>
-      </div>
+        </Modal.Body>
+      </Modal>
     </div>
   );
 }

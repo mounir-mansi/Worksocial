@@ -4,6 +4,7 @@ import { Formik, Form, Field } from "formik";
 import PropTypes from "prop-types";
 
 // Import Styles
+import "./EventCard.css";
 import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
 import Dropdown from "react-bootstrap/Dropdown";
@@ -13,6 +14,7 @@ import { Form as MyForm } from "react-bootstrap";
 
 // Import Utils
 import ImageWithJWT from "../../utils/ImageWithJWT";
+import getImageUrl from "../../utils/getImageUrl";
 import { hostname } from "../../HostnameConnect/Hostname";
 
 // Import Contexts
@@ -32,14 +34,14 @@ export default function EventCard({ event, eventComments, eventLikes }) {
 
   // Local Storage Variables
   const currentUserID = parseInt(localStorage.getItem("userId"), 10);
-  const token = localStorage.getItem("userToken");
 
   // Mapping Creators
   const eventCreator = users.find((user) => user.User_ID === event.User_ID);
 
   // Formatage de la date
   const formattedStartDate = new Date(event.StartDate).toLocaleDateString(
-    "en-GB"
+    "fr-FR",
+    { day: "numeric", month: "long", year: "numeric" }
   );
 
   const commentUserPairs = eventComments.map((cmt) => {
@@ -61,16 +63,16 @@ export default function EventCard({ event, eventComments, eventLikes }) {
   }, []);
 
   if (!eventCreator) {
-    return <div>Loading...</div>;
+    return <div>Chargement...</div>;
   }
 
   const imageUrl = [
-    `${hostname}/upload/${event.Image}`,
-    `${hostname}/upload/${eventCreator.ProfileImage}`,
+    getImageUrl(event.Image),
+    getImageUrl(eventCreator.ProfileImage),
   ];
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div>Chargement...</div>;
   }
 
   // Handle Modals
@@ -122,9 +124,7 @@ export default function EventCard({ event, eventComments, eventLikes }) {
       const response = await fetch(`${hostname}/events/${event.Event_ID}`, {
         method: "PUT",
         body: formData,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        credentials: 'include',
       });
       if (response.ok) {
         console.info("Event Edit !!");
@@ -143,9 +143,7 @@ export default function EventCard({ event, eventComments, eventLikes }) {
     try {
       const response = await fetch(`${hostname}/events/${event.Event_ID}`, {
         method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        credentials: 'include',
       });
       if (response.ok) {
         // console.info("Post Deleted");
@@ -169,9 +167,9 @@ export default function EventCard({ event, eventComments, eventLikes }) {
         {
           method: "POST",
           headers: {
-            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
+          credentials: 'include',
           body: JSON.stringify({ comment }),
         }
       );
@@ -196,9 +194,9 @@ export default function EventCard({ event, eventComments, eventLikes }) {
           {
             method: "POST",
             headers: {
-              Authorization: `Bearer ${token}`,
               "Content-Type": "application/json",
             },
+            credentials: 'include',
             body: JSON.stringify({ userId }),
           }
         );
@@ -217,9 +215,9 @@ export default function EventCard({ event, eventComments, eventLikes }) {
           {
             method: "DELETE",
             headers: {
-              Authorization: `Bearer ${token}`,
               "Content-Type": "application/json",
             },
+            credentials: 'include',
             body: JSON.stringify({ userId }),
           }
         );
@@ -247,8 +245,8 @@ export default function EventCard({ event, eventComments, eventLikes }) {
           {parseInt(currentUserID, 10) ===
           parseInt(eventCreator.User_ID, 10) ? (
             <DropdownButton id="context-menu-btn" title="">
-              <Dropdown.Item onClick={handleOpenModal}>Edit</Dropdown.Item>
-              <Dropdown.Item onClick={handleOpenDelModal}>Delete</Dropdown.Item>
+              <Dropdown.Item onClick={handleOpenModal}>Modifier</Dropdown.Item>
+              <Dropdown.Item onClick={handleOpenDelModal}>Supprimer</Dropdown.Item>
             </DropdownButton>
           ) : null}
         </div>
@@ -297,12 +295,12 @@ export default function EventCard({ event, eventComments, eventLikes }) {
             onClick={handleOpenCommentModal}
             className="view-comments-btn"
           >
-            View All Comments
+            Voir tous les commentaires
           </Card.Link>
           <MyForm className="submit-comment-form">
             <MyForm.Control
               type="text"
-              placeholder="Write a comment..."
+              placeholder="Écrire un commentaire..."
               value={comment}
               onChange={handleComment}
             />
@@ -311,14 +309,14 @@ export default function EventCard({ event, eventComments, eventLikes }) {
               type="submit"
               onClick={handleSubmitComment}
             >
-              Post
+              <i className="fa-regular fa-paper-plane" />
             </button>
           </MyForm>
         </Card.Body>
       </Card>
       <Modal show={showModal} onHide={handleCloseModal} className="modals">
         <Modal.Header closeButton>
-          <Modal.Title>Edit Post</Modal.Title>
+          <Modal.Title>Modifier l'événement</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Formik
@@ -328,55 +326,43 @@ export default function EventCard({ event, eventComments, eventLikes }) {
           >
             {({ setFieldValue }) => (
               <Form>
-                <label htmlFor="EventName">Event Name</label>
-                <Field
-                  name="EventName"
-                  placeholder="Event Name"
-                  type="text"
-                  className="form-control"
-                />
-
-                <label htmlFor="StartDate">Start Date</label>
-                <Field
-                  name="StartDate"
-                  placeholder="Start Date"
-                  type="date"
-                  className="form-control"
-                />
-
-                <label htmlFor="EndDate">End Date</label>
-                <Field
-                  name="EndDate"
-                  placeholder="End Date"
-                  type="date"
-                  className="form-control"
-                />
-
-                <label htmlFor="StartTime">Start Time</label>
-                <Field
-                  name="StartTime"
-                  placeholder="Start Time"
-                  type="time"
-                  className="form-control"
-                />
-
-                <label htmlFor="EndTime">End Time</label>
-                <Field
-                  name="EndTime"
-                  placeholder="End Time"
-                  type="time"
-                  className="form-control"
-                />
-
-                <label htmlFor="Description">Description</label>
-                <Field
-                  name="Description"
-                  component="textarea"
-                  rows="5"
-                  placeholder="Description"
-                  className="form-control"
-                />
-
+                <div className="title-content">
+                  <label htmlFor="EventName">Nom de l'événement</label>
+                  <Field
+                    name="EventName"
+                    placeholder="Nom de l'événement"
+                    type="text"
+                    className="form-control"
+                  />
+                  <div className="event-dates">
+                    <div className="event-date-field">
+                      <label htmlFor="StartDate">Date de début</label>
+                      <Field name="StartDate" type="date" className="form-control" />
+                    </div>
+                    <div className="event-date-field">
+                      <label htmlFor="EndDate">Date de fin</label>
+                      <Field name="EndDate" type="date" className="form-control" />
+                    </div>
+                  </div>
+                  <div className="event-dates">
+                    <div className="event-date-field">
+                      <label htmlFor="StartTime">Heure de début</label>
+                      <Field name="StartTime" type="time" className="form-control" />
+                    </div>
+                    <div className="event-date-field">
+                      <label htmlFor="EndTime">Heure de fin</label>
+                      <Field name="EndTime" type="time" className="form-control" />
+                    </div>
+                  </div>
+                  <label htmlFor="Description">Description</label>
+                  <Field
+                    name="Description"
+                    component="textarea"
+                    rows="4"
+                    placeholder="Description"
+                    className="form-control"
+                  />
+                </div>
                 <div className="visibility-group">
                   <div className="radio-group">
                     <Field name="Visibility" type="radio" value="Public" />
@@ -384,20 +370,22 @@ export default function EventCard({ event, eventComments, eventLikes }) {
                   </div>
                   <div className="radio-group">
                     <Field name="Visibility" type="radio" value="Private" />
-                    <label htmlFor="Visibility">Private</label>
+                    <label htmlFor="Visibility">Privé</label>
                   </div>
                 </div>
-
-                <label htmlFor="Image">Image</label>
-                <input
-                  name="Image"
-                  type="file"
-                  onChange={(e) =>
-                    setFieldValue("Image", e.currentTarget.files[0])
-                  }
-                />
-                <button id="editPost-btn" type="submit">
-                  Edit
+                <div className="img-upload">
+                  <label htmlFor="EventImage">
+                    <i className="fa-solid fa-image" /> Joindre une image
+                  </label>
+                  <input
+                    id="EventImage"
+                    name="Image"
+                    type="file"
+                    onChange={(e) => setFieldValue("Image", e.currentTarget.files[0])}
+                  />
+                </div>
+                <button id="editEvent-btn" type="submit">
+                  Modifier
                 </button>
               </Form>
             )}
@@ -410,15 +398,15 @@ export default function EventCard({ event, eventComments, eventLikes }) {
         className="modals"
       >
         <Modal.Header closeButton>
-          <Modal.Title>Delete Post</Modal.Title>
+          <Modal.Title>Supprimer l'événement</Modal.Title>
         </Modal.Header>
-        <Modal.Body>Are you sure you want to delete this post?</Modal.Body>
+        <Modal.Body>Êtes-vous sûr de vouloir supprimer cet événement ?</Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleCloseDelModal}>
-            Close
+            Annuler
           </Button>
           <Button variant="danger" onClick={handleDeleteEvent}>
-            Delete
+            Supprimer
           </Button>
         </Modal.Footer>
       </Modal>
@@ -428,18 +416,18 @@ export default function EventCard({ event, eventComments, eventLikes }) {
         className="modals"
       >
         <Modal.Header closeButton>
-          <Modal.Title>Comments</Modal.Title>
+          <Modal.Title>Commentaires</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {commentUserPairs.length === 0 ? (
-            <p>No comments yet</p>
+            <p>Aucun commentaire pour l'instant</p>
           ) : (
             commentUserPairs.map(({ commnt, user }) => (
               <div className="comment" key={commnt.Comment_ID}>
                 {user && (
                   <div className="profileImgDiv-comments">
                     <ImageWithJWT
-                      imageUrl={`${hostname}/upload/${user.ProfileImage}`}
+                      imageUrl={getImageUrl(user.ProfileImage)}
                     />
                   </div>
                 )}
@@ -454,7 +442,7 @@ export default function EventCard({ event, eventComments, eventLikes }) {
           <MyForm className="submit-comment-form">
             <MyForm.Control
               type="text"
-              placeholder="Write a comment..."
+              placeholder="Écrire un commentaire..."
               value={comment}
               onChange={handleComment}
             />

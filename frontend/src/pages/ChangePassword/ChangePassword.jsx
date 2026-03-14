@@ -19,9 +19,9 @@ function ChangePassword() {
         const response = await fetch(`${hostname}/users/${userIdLoggedIn}`, {
           method: "GET",
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("userToken")}`,
             "Content-Type": "application/json",
           },
+          credentials: 'include',
         });
 
         if (!response.ok) {
@@ -82,9 +82,9 @@ function ChangePassword() {
         {
           method: "POST",
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("userToken")}`,
             "Content-Type": "application/json",
           },
+          credentials: 'include',
           body: JSON.stringify({
             Password: oldPassword,
             Email: user.Email,
@@ -109,9 +109,9 @@ function ChangePassword() {
         {
           method: "PUT",
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("userToken")}`,
             "Content-Type": "application/json",
           },
+          credentials: 'include',
           body: JSON.stringify({
             Password: newPassword,
           }),

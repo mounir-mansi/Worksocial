@@ -13,14 +13,11 @@ export function EventProvider({ children }) {
   const [events, setEvents] = useState([]);
   const [comments, setComments] = useState([]);
   const [likes, setLikes] = useState([]);
-  const token = localStorage.getItem("userToken");
 
   const getEvents = async () => {
     try {
       const response = await fetch(`${hostname}/events`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        credentials: 'include',
       });
       if (response.ok) {
         const data = await response.json();
@@ -39,9 +36,7 @@ export function EventProvider({ children }) {
         const response = await fetch(
           `${hostname}/events/${event.Event_ID}/comments`,
           {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+            credentials: 'include',
           }
         );
         if (response.ok) {
@@ -64,9 +59,7 @@ export function EventProvider({ children }) {
         const response = await fetch(
           `${hostname}/events/${event.Event_ID}/likes`,
           {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+            credentials: 'include',
           }
         );
         if (response.ok) {

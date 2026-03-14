@@ -11,7 +11,7 @@ import { useUser } from "../../contexts/UserContext";
 
 // Import Utils
 import ImageWithJWT from "../../utils/ImageWithJWT";
-import { hostname } from "../../HostnameConnect/Hostname";
+import getImageUrl from "../../utils/getImageUrl";
 
 export default function EventMiniCard({ event, daysRemaining }) {
   // Contexts
@@ -22,24 +22,25 @@ export default function EventMiniCard({ event, daysRemaining }) {
 
   // Formatage de la date
   const formattedStartDate = new Date(event.StartDate).toLocaleDateString(
-    "fr-FR"
+    "fr-FR",
+    { day: "numeric", month: "long", year: "numeric" }
   );
 
-  const imageUrl = `${hostname}/upload/${event.Image}`;
+  const imageUrl = getImageUrl(event.Image);
 
   return (
     <Card>
       <Card.Header>
         <span>
           <strong>{formattedStartDate}</strong>
-          <span className="subtext"> in {daysRemaining} days</span>
+          <span className="subtext"> dans {daysRemaining} jours</span>
         </span>
         <span>
-          <span className="subtext">created by</span>{" "}
+          <span className="subtext">par</span>{" "}
           {eventCreator ? (
             <strong>{eventCreator.FirstName}</strong>
           ) : (
-            <strong>Unknown</strong>
+            <strong>Inconnu</strong>
           )}
         </span>
       </Card.Header>

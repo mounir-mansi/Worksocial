@@ -34,7 +34,7 @@ const MyProfileScreen = ({ route }) => {
       const token = await AsyncStorage.getItem("userToken");
 
       if (userIdToShow && token) {
-        fetch(`http://192.168.1.62:5000/users/${userIdToShow}`, {
+        fetch(`${hostname}/users/${userIdToShow}`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }

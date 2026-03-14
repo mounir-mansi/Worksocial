@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import PropTypes from "prop-types";
 import { hostname } from "../HostnameConnect/Hostname";
+import { useAuth } from "../utils/useConnecte";
 
 const UserContext = createContext(null);
 
@@ -11,19 +12,19 @@ export function useUser() {
 export function UserProvider({ children }) {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
-  const token = localStorage.getItem("userToken");
+  const { isLoggedIn } = useAuth();
 
   useEffect(() => {
     const getUsers = async () => {
-      if (token) {
+      if (isLoggedIn) {
         try {
           setLoading(true);
           const response = await fetch(`${hostname}/users`, {
             method: "GET",
             headers: {
-              Authorization: `Bearer ${token}`,
               "Content-Type": "application/json",
             },
+            credentials: 'include',
           });
           const data = await response.json();
           if (response.ok) {
@@ -38,7 +39,7 @@ export function UserProvider({ children }) {
     };
 
     getUsers();
-  }, [token]);
+  }, [isLoggedIn]);
 
   const value = useMemo(() => ({ users, setUsers, loading }), [users, loading]);
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;

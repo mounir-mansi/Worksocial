@@ -1,312 +1,260 @@
 const crypto = require("crypto");
-const { sendEmail } = require("../../utils/emailSender");
-const models = require("../models");
+const { sendEmail } = require("../lib/emailSender");
 const { generateVerificationCode } = require("../../utils/helperFunctions");
+const prisma = require("../lib/prisma");
+const { deleteS3Object } = require("../lib/deleteS3Object");
 
 const login = async (req, res, next) => {
-  const Email = req.body;
-  console.info(Email);
-  await models.user
-    .login(Email)
-    .then(([result]) => {
-      console.info("result", result);
-      if (result.length === 0) {
-        // User not found
-        res.status(401).json({ emailNotFound: true });
-      } else {
-        const user = result[0];
-        console.info("user",user);
-        // Pass the entire user object to auth.js for password verification
-        req.user = user;
-        next(); // Proceed to password verification in the auth middleware
-      }
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).send("Error retrieving data from database");
-    });
-};
-
-const getUsers = (req, res) => {
-  models.user
-    .findAll()
-    .then(([rows]) => {
-      res.send(rows);
-    })
-    .catch((err) => {
-      console.error(err);
-      res.sendStatus(500);
-    });
-};
-
-const getUserByID = (req, res) => {
-  models.user
-    .findByPK(req.params.id)
-    .then(([rows]) => {
-      if (rows[0] == null) {
-        res.sendStatus(404);
-      } else {
-        res.send(rows[0]);
-      }
-    })
-    .catch((err) => {
-      console.error(err);
-      res.sendStatus(500);
-    });
-};
-
-const updateUser = (req, res) => {
-  const user = req.body;
-  const userID = req.User_ID;
-  user.id = parseInt(req.params.id, 10);
-
-  models.user
-    .update(user, userID)
-    .then(([result]) => {
-      if (result.affectedRows === 0) {
-        res.sendStatus(404);
-      } else {
-        res.sendStatus(204);
-      }
-    })
-    .catch((err) => {
-      console.error(err);
-      res.sendStatus(500);
-    });
-};
-
-const updatePassword = async (req, res) => {
-  const user = req.body;
-  const userID = req.User_ID;
-  user.id = parseInt(req.params.id, 10);
-
   try {
-    const result = await models.user.updatePassword(user, userID);
-
-    if (result.affectedRows === 0) {
-      res.sendStatus(404);
-    } else {
-      res.sendStatus(204);
+    const user = await prisma.user.findUnique({
+      where: { Email: req.body.Email },
+    });
+    if (!user) {
+      return res.status(401).json({ emailNotFound: true });
     }
+    req.user = user;
+    next();
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error retrieving data from database");
+  }
+  return null;
+};
+
+const getUsers = async (_req, res) => {
+  try {
+    const users = await prisma.user.findMany();
+    res.send(users);
   } catch (err) {
     console.error(err);
     res.sendStatus(500);
   }
 };
 
-const createUser = (req, res) => {
-  const user = req.body;
-  console.info(user);
-
-  // Ajouter le chemin de l'image de profil à l'objet user si une image est téléchargée
-  if (req.file) {
-    user.ProfileImage = req.file.filename; // Utilisez seulement le nom du fichier
-  }
-
-  models.user
-    .insert(user)
-    .then(([result]) => {
-      res.location(`/users/${result.insertId}`).sendStatus(201);
-    })
-    .catch((err) => {
-      console.error(err);
-      res.sendStatus(500);
-    });
-};
-
-const deleteUser = async (req, res, next) => {
-  const emailInput = req.body.Email;
-
-  const [user] = await models.user.findByPK(req.params.id);
-  const userEmail = user[0].Email;
-
-  if (emailInput === userEmail) {
-    next();
-  } else {
-    res.sendStatus(403);
-  }
-
-  models.user
-    .delete(emailInput)
-    .then(([result]) => {
-      if (result.affectedRows === 0) {
-        res.sendStatus(404);
-      } else {
-        res.sendStatus(204);
-      }
-    })
-    .catch((err) => {
-      console.error(err);
-      res.sendStatus(500);
-    });
-};
-
-const logout = async (req, res) => {
+const getUserByID = async (req, res) => {
   try {
-    const token = req.headers.authorization.replace(/^Bearer\s+/, "");
-    models.tokenBlacklist.insert(token).then(([result]) => {
-      if (result.affectedRows === 0) {
-        res.sendStatus(404);
-      } else {
-        res.sendStatus(204);
-      }
+    const user = await prisma.user.findUnique({
+      where: { User_ID: parseInt(req.params.id, 10) },
     });
-  } catch (error) {
-    res.status(500).send({ message: "Error logging out" });
+    if (!user) return res.sendStatus(404);
+    res.send(user);
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
   }
+  return null;
+};
+
+const updateUser = async (req, res) => {
+  try {
+    const id = parseInt(req.params.id, 10);
+    const { Username, LastName, FirstName, BirthDate, Age, Address, Email, Phone, Biography, Role, Gender } = req.body;
+    let { ProfileImage } = req.body;
+    if (req.file) {
+      const old = await prisma.user.findUnique({ where: { User_ID: id }, select: { ProfileImage: true } });
+      if (old?.ProfileImage) await deleteS3Object(old.ProfileImage);
+      ProfileImage = `${process.env.S3_PUBLIC_URL}/${req.file.key}`;
+    }
+    await prisma.user.update({
+      where: { User_ID: id },
+      data: { Username, LastName, FirstName, BirthDate: BirthDate ? new Date(BirthDate) : undefined, Age, Address, Email, Phone, Biography, Role, Gender, ProfileImage },
+    });
+    res.sendStatus(204);
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
+};
+
+const updatePassword = async (req, res) => {
+  try {
+    const id = parseInt(req.params.id, 10);
+    await prisma.user.update({
+      where: { User_ID: id },
+      data: { hashedPassword: req.body.hashedPassword },
+    });
+    res.sendStatus(204);
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
+};
+
+const createUser = async (req, res) => {
+  try {
+    const user = req.body;
+    if (req.file) {
+      user.ProfileImage = `${process.env.S3_PUBLIC_URL}/${req.file.key}`;
+    }
+    const created = await prisma.user.create({
+      data: {
+        Username: user.Username,
+        LastName: user.LastName,
+        FirstName: user.FirstName,
+        BirthDate: user.BirthDate ? new Date(user.BirthDate) : null,
+        Age: user.Age ? parseInt(user.Age, 10) : null,
+        Address: user.Address || null,
+        Email: user.Email,
+        Phone: user.Phone || null,
+        Biography: user.Biography || null,
+        hashedPassword: user.hashedPassword,
+        Role: user.Role || "User",
+        Gender: user.Gender,
+        ProfileImage: user.ProfileImage || null,
+        Company_ID: user.Company_ID ? parseInt(user.Company_ID, 10) : null,
+      },
+    });
+    res.location(`/users/${created.User_ID}`).sendStatus(201);
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
+};
+
+const deleteUser = async (req, res) => {
+  try {
+    const emailInput = req.body.Email;
+    const user = await prisma.user.findUnique({
+      where: { User_ID: parseInt(req.params.id, 10) },
+    });
+    if (!user) return res.sendStatus(404);
+    if (emailInput !== user.Email) return res.sendStatus(403);
+    await prisma.user.delete({ where: { Email: emailInput } });
+    res.sendStatus(204);
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
+  return null;
+};
+
+const logout = (req, res, next) => {
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+  });
+  next();
 };
 
 const getUserByEmail = async (req, res) => {
   const { Email } = req.body;
-  console.info(Email);
   try {
-    const user = await models.user.findUserByEmail(Email);
-    if (user != null) {
-      const uniqueKey = crypto.randomBytes(32).toString("hex");
-      res.status(200).send({ uniqueKey, Email });
-      models.resetPasswordKey.addKey(uniqueKey, Email);
-      const emailUser = await sendEmail({
-        to: "nyukeit@outlook.com",
-        subject: "Re-initialiser votre Mot de Passe",
-        text: `Bonjour, vous avez demandez la re-initialisation de votre mot de passe. Veuillez cliquer sur ce lien pour changer votre mot de passe : http://localhost:5173/resetpassword/${uniqueKey}`,
-        html: `Bonjour, vous avez demandez la re-initialisation de votre mot de passe. Veuillez cliquer sur ce lien pour changer votre mot de passe : http://localhost:5173/resetpassword/${uniqueKey}`,
-      });
-      if (emailUser) {
-        console.info("Email sent");
-      } else {
-        console.info("Email not sent");
-      }
-    } else {
-      res.status(404).send("User not found");
-    }
+    const user = await prisma.user.findUnique({ where: { Email } });
+    if (!user) return res.status(404).send("User not found");
+    const uniqueKey = crypto.randomBytes(32).toString("hex");
+    await prisma.resetPasswordKey.create({ data: { unique_key: uniqueKey, Email } });
+    res.status(200).send({ uniqueKey, Email });
+    await sendEmail({
+      to: Email,
+      subject: "Re-initialiser votre Mot de Passe",
+      text: `Bonjour, cliquez ici pour réinitialiser votre mot de passe : ${process.env.FRONTEND_URL}/resetpassword/${uniqueKey}`,
+      html: `Bonjour, cliquez ici pour réinitialiser votre mot de passe : ${process.env.FRONTEND_URL}/resetpassword/${uniqueKey}`,
+    });
   } catch (err) {
     console.error(err);
     res.status(500).send("Error retrieving data from database");
   }
+  return null;
 };
 
 const verifyKey = async (req, res) => {
-  const { key } = req.body;
-  console.info(key);
-  const [result] = await models.resetPasswordKey.getResetPasswordKey(key);
-  if (result[0].unique_key === key) {
-    const currentTime = new Date();
-    const expirationTime = new Date(result[0].expires_at);
-    let keyExpired = false;
-    try {
-      if (currentTime > expirationTime) {
-        keyExpired = true;
-        res.status(400).send(keyExpired);
-      }
-    } catch (err) {
-      console.error(err);
-      res.sendStatus(500);
+  try {
+    const { key } = req.body;
+    const record = await prisma.resetPasswordKey.findUnique({ where: { unique_key: key } });
+    if (!record) return res.status(404).send("Key not found");
+    if (new Date() > new Date(record.expires_at)) {
+      return res.status(400).send(true);
     }
+    res.sendStatus(200);
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
   }
+  return null;
 };
 
 const resetPassword = async (req, res) => {
-  const { hashedPassword, key } = req.body;
-  console.info(hashedPassword, key);
-  if (!key) {
-    res.sendStatus(400);
-    return;
+  try {
+    const { hashedPassword, key } = req.body;
+    if (!key) return res.sendStatus(400);
+    const record = await prisma.resetPasswordKey.findUnique({ where: { unique_key: key } });
+    if (!record) return res.sendStatus(404);
+    await prisma.user.update({
+      where: { Email: record.Email },
+      data: { hashedPassword },
+    });
+    await prisma.resetPasswordKey.delete({ where: { unique_key: key } });
+    res.sendStatus(204);
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
   }
-  await models.resetPasswordKey.getResetPasswordKey(key).then(([result]) => {
-    if (result[0].unique_key === key) {
-      try {
-        models.user
-          .resetPassword(hashedPassword, result[0].Email)
-          .then(([r]) => {
-            if (r.affectedRows === 0) {
-              res.sendStatus(404);
-            } else {
-              res.sendStatus(204);
-            }
-          });
-      } catch (err) {
-        console.error(err);
-        res.sendStatus(500);
-      }
-    }
-  });
+  return null;
 };
 
-const getUserByEmailWithPasswordAndPassToNext = (req, res, next) => {
-  const email = req.body;
-  models.user
-    .findUserByEmail(email.Email)
-    .then(([users]) => {
-      if (users[0] != null) {
-        const [firstUser] = users;
-        req.user = firstUser;
-        next();
-      } else {
-        res.sendStatus(401);
-      }
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).send("Error retrieving data from database");
-    });
+const getUserByEmailWithPasswordAndPassToNext = async (req, res, next) => {
+  try {
+    const user = await prisma.user.findUnique({ where: { Email: req.body.Email } });
+    if (!user) return res.sendStatus(401);
+    req.user = user;
+    next();
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error retrieving data from database");
+  }
+  return null;
 };
 
 const verifyUsernameAvailability = async (req, res) => {
-  const { username } = req.query;
   try {
-    const isAvailable = await models.user.checkUsernameAvailability(username);
-    res.json({ isAvailable });
-  } catch (error) {
-    console.error(
-      "Erreur lors de la vérification du nom d'utilisateur:",
-      error
-    );
+    const existing = await prisma.user.findUnique({ where: { Username: req.query.username } });
+    res.json({ isAvailable: !existing });
+  } catch (err) {
+    console.error(err);
     res.status(500).send("Erreur interne du serveur");
   }
 };
 
 const verifyEmailAvailability = async (req, res) => {
-  const { email } = req.query;
   try {
-    const isAvailable = await models.user.checkEmailAvailability(email);
-    res.json({ isAvailable });
-  } catch (error) {
-    console.error("Erreur lors de la vérification de l'email:", error);
+    const existing = await prisma.user.findUnique({ where: { Email: req.query.email } });
+    res.json({ isAvailable: !existing });
+  } catch (err) {
+    console.error(err);
     res.status(500).send("Erreur interne du serveur");
   }
 };
+
 const verifyPhoneAvailability = async (req, res) => {
-  const { phone } = req.query;
   try {
-    const isAvailable = await models.user.checkPhoneAvailability(phone);
-    res.json({ isAvailable });
-  } catch (error) {
-    console.error("Erreur lors de la vérification du téléphone:", error);
+    const existing = await prisma.user.findFirst({ where: { Phone: req.query.phone } });
+    res.json({ isAvailable: !existing });
+  } catch (err) {
+    console.error(err);
     res.status(500).json({ message: "Erreur interne du serveur" });
   }
 };
+
 const requestEmailVerification = async (req, res) => {
   const { userId, email } = req.body;
-
-  // Vérifier si l'utilisateur existe
   try {
-    const [user] = await models.user.findByPK(userId);
-    if (!user || user.length === 0) {
-      return res.status(404).send({ message: "User not found" });
-    }
+    const user = await prisma.user.findUnique({ where: { User_ID: parseInt(userId, 10) } });
+    if (!user) return res.status(404).send({ message: "User not found" });
 
     const code = generateVerificationCode();
     const expiresAt = new Date();
     expiresAt.setMinutes(expiresAt.getMinutes() + 15);
 
-    await models.user.insertVerificationCode(userId, code, expiresAt);
+    await prisma.emailVerification.create({
+      data: { User_ID: parseInt(userId, 10), verification_code: code, expires_at: expiresAt },
+    });
 
-    // Préparation et envoi de l'email
     const emailSent = await sendEmail({
       to: email,
       subject: "Code de vérification",
-      text: `Bonjour et bienvenue, vous trouverez ici votre code de vérification : ${code}. Vous avez 15 minutes pour valider votre inscription.`,
-      html: `<b>Bonjour et bienvenue, vous trouverez ici votre code de vérification : ${code}. Vous avez 15 minutes pour valider votre inscription.</b>`,
+      text: `Votre code de vérification : ${code}. Valable 15 minutes.`,
+      html: `<b>Votre code de vérification : ${code}. Valable 15 minutes.</b>`,
     });
 
     if (emailSent) {
@@ -314,8 +262,8 @@ const requestEmailVerification = async (req, res) => {
     } else {
       throw new Error("Failed to send verification email.");
     }
-  } catch (error) {
-    console.error(error);
+  } catch (err) {
+    console.error(err);
     res.status(500).send({ message: "Error requesting email verification" });
   }
   return null;
@@ -323,25 +271,30 @@ const requestEmailVerification = async (req, res) => {
 
 const verifyEmailCode = async (req, res) => {
   const { userId, code } = req.body;
-
   try {
-    const [results] = await models.user.findVerificationCode(userId, code);
-    if (results.length > 0) {
-      // Le code est valide, marquer l'email comme vérifié
-      await models.user.markEmailAsVerified(userId);
-      // Supprimer le code de vérification pour éviter sa réutilisation
-      await models.user.deleteVerificationCode(userId, code);
-      res.status(200).send({ message: "Email verified successfully." });
-    } else {
-      // Le code est invalide ou a expiré
-      res
-        .status(400)
-        .send({ message: "Invalid or expired verification code." });
+    const record = await prisma.emailVerification.findFirst({
+      where: {
+        User_ID: parseInt(userId, 10),
+        verification_code: code,
+        expires_at: { gt: new Date() },
+      },
+    });
+    if (!record) {
+      return res.status(400).send({ message: "Invalid or expired verification code." });
     }
-  } catch (error) {
-    console.error(error);
+    await prisma.user.update({
+      where: { User_ID: parseInt(userId, 10) },
+      data: { emailVerified: true },
+    });
+    await prisma.emailVerification.deleteMany({
+      where: { User_ID: parseInt(userId, 10), verification_code: code },
+    });
+    res.status(200).send({ message: "Email verified successfully." });
+  } catch (err) {
+    console.error(err);
     res.status(500).send({ message: "Error verifying email code." });
   }
+  return null;
 };
 
 module.exports = {

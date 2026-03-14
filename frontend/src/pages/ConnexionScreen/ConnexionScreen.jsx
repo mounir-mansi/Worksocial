@@ -27,18 +27,18 @@ function ConnexionScreen() {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: 'include',
         body: JSON.stringify(formData),
       });
-      
+
       const data = await response.json();
 
       if (response.ok) {
-        const { authToken, user } = data;
-        localStorage.setItem("userToken", authToken);
+        const { user } = data;
         localStorage.setItem("userId", user.User_ID);
         localStorage.setItem("username", user.Username);
         localStorage.setItem("firstName", data.user.FirstName);
-        auth.login(authToken, user.User_ID);
+        auth.login(null, user.User_ID);
         localStorage.setItem("user", JSON.stringify(user));
         setIsSubmitted(true);
         navigate("/dashboard");

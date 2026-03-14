@@ -16,9 +16,9 @@ export function CompanyProvider({ children }) {
     try {
       await fetch(`${hostname}/companies`, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
           "Content-Type": "application/json",
         },
+        credentials: 'include',
       }).then((res) => res.json().then((data) => setCompanies(data)));
       console.info(companies);
     } catch (error) {

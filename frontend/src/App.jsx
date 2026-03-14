@@ -14,7 +14,6 @@ import CompaniesScreen from "./pages/CompaniesScreen/CompaniesScreen";
 import SurveyScreen from "./pages/SurveyScreen/SurveyScreen";
 import MembersScreen from "./pages/MembersScreen/MembersScreen";
 import ChangePassword from "./pages/ChangePassword/ChangePassword";
-import EditUserProfilScreen from "./pages/EditUserProfilScreen/EditUserProfilScreen";
 import MyUserProfilScreen from "./pages/MyUserProfilScreen/MyUserProfilScreen";
 import ResetPassword from "./pages/ResetPassword/ResetPassword";
 import VerifyUser from "./pages/VerifyUser/VerifyUser";
@@ -89,10 +88,31 @@ function App() {
                   </CompanyProvider>
                 }
               />
-              <Route path="/profile/:userId" element={<MyUserProfilScreen />} />
-              <Route path="/myprofil" element={<MyUserProfilScreen />} />
-              <Route path="/editprofil" element={<EditUserProfilScreen />} />
-              <Route path="/changepassword" element={<ChangePassword />} />
+              <Route
+                path="/profile/:userId"
+                element={
+                  <PostProvider>
+                    <EventProvider>
+                      <SurveyProvider>
+                        <MyUserProfilScreen />
+                      </SurveyProvider>
+                    </EventProvider>
+                  </PostProvider>
+                }
+              />
+              <Route
+                path="/myprofil"
+                element={
+                  <PostProvider>
+                    <EventProvider>
+                      <SurveyProvider>
+                        <MyUserProfilScreen />
+                      </SurveyProvider>
+                    </EventProvider>
+                  </PostProvider>
+                }
+              />
+<Route path="/changepassword" element={<ChangePassword />} />
               <Route path="/verify-user" element={<VerifyUser />} />
               <Route path="/resetpassword/:key" element={<ResetPassword />} />
               <Route path="/resetpassword" element={<ResetPassword />} />

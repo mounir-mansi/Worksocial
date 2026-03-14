@@ -7,8 +7,3 @@
   background-color: #f8f9fa; /* Optional: Change background color on hover */
 }
 
-/* You can also adjust the padding or font size of dropdown items */
-.custom-dropdown-menu .dropdown-item {
-  width: 400px;
-  height: 100px;
-}

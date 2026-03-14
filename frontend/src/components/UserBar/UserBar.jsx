@@ -8,22 +8,22 @@ export default function UserBar() {
       <ul className="NavLinks">
         <li>
           <Link to="/dashboard">
-            <i className="fas fa-home" /> Dashboard
+            <i className="fas fa-home" /> Accueil
           </Link>
         </li>
         <li>
           <Link to="/posts">
-            <i className="fas fa-edit" /> Posts
+            <i className="fas fa-edit" /> Postes
           </Link>
         </li>
         <li>
           <Link to="/surveys">
-            <i className="fas fa-poll" /> Surveys
+            <i className="fas fa-poll" /> Sondages
           </Link>
         </li>
         <li>
           <Link to="/events">
-            <i className="fas fa-calendar-alt" /> Events
+            <i className="fas fa-calendar-alt" /> Événements
           </Link>
         </li>
         <li>
@@ -33,7 +33,7 @@ export default function UserBar() {
         </li>
         <li>
           <Link to="/companies">
-            <i className="fas fa-building" /> Companies
+            <i className="fas fa-building" /> Entreprises
           </Link>
         </li>
       </ul>

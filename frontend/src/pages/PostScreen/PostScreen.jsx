@@ -1,8 +1,8 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Formik, Form, Field } from "formik";
 
-// import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
+import Modal from "react-bootstrap/Modal";
 import PostCard from "../../components/Posts/PostCard";
 import "./PostScreen.css";
 import UserBar from "../../components/UserBar/UserBar";
@@ -10,6 +10,7 @@ import { usePost } from "../../contexts/PostContext";
 import { hostname } from "../../HostnameConnect/Hostname";
 
 export default function PostScreen() {
+  const [showModal, setShowModal] = useState(false);
   const { posts, getPosts, comments, getComments, likes, getLikes } = usePost();
 
   useEffect(() => {
@@ -18,7 +19,6 @@ export default function PostScreen() {
     getLikes();
   }, []);
 
-  const token = localStorage.getItem("userToken");
   const userID = localStorage.getItem("userId");
 
   posts.sort((a, b) => (b.Updated_At > a.Updated_At ? 1 : -1));
@@ -45,9 +45,7 @@ export default function PostScreen() {
       await fetch(`${hostname}/posts`, {
         method: "POST",
         body: formData,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        credentials: 'include',
       }).then((res) => {
         if (res.ok) {
           getPosts();
@@ -83,28 +81,23 @@ export default function PostScreen() {
       </div>
       <div className="sidebar">
         <div className="sidebar-item">
-          <h3>Create Post</h3>
-          <Formik
-            initialValues={initialValues}
-            onSubmit={handleCreatePost}
-            className="sidebar-form"
-          >
+          <h3>Posts</h3>
+          <Button onClick={() => setShowModal(true)} style={{ width: "100%" }}>
+            <i className="fas fa-plus" /> Nouveau post
+          </Button>
+        </div>
+      </div>
+      <Modal show={showModal} onHide={() => setShowModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Créer un post</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Formik initialValues={initialValues} onSubmit={async (values, { resetForm }) => { await handleCreatePost(values); resetForm(); setShowModal(false); }}>
             {({ setFieldValue }) => (
               <Form>
                 <div className="title-content">
-                  <Field
-                    name="Title"
-                    placeholder="Title"
-                    type="text"
-                    className="form-control"
-                  />
-                  <Field
-                    name="Content"
-                    component="textarea"
-                    rows="3"
-                    placeholder="Write Post"
-                    className="form-control"
-                  />
+                  <Field name="Title" placeholder="Titre" type="text" className="form-control" />
+                  <Field name="Content" component="textarea" rows="4" placeholder="Contenu du post" className="form-control" />
                 </div>
                 <div className="visibility-group">
                   <div className="radio-group">
@@ -113,30 +106,19 @@ export default function PostScreen() {
                   </div>
                   <div className="radio-group">
                     <Field name="Visibility" type="radio" value="Private" />
-                    <label htmlFor="Visibility">Private</label>
+                    <label htmlFor="Visibility">Privé</label>
                   </div>
                 </div>
                 <div className="img-upload">
-                  <label htmlFor="Image">
-                    <i className="fa-solid fa-image" /> Attach Image
-                  </label>
-                  <input
-                    id="Image"
-                    name="Image"
-                    type="file"
-                    onChange={(event) =>
-                      setFieldValue("Image", event.currentTarget.files[0])
-                    }
-                  />
+                  <label htmlFor="Image"><i className="fa-solid fa-image" /> Joindre une image</label>
+                  <input id="Image" name="Image" type="file" onChange={(e) => setFieldValue("Image", e.currentTarget.files[0])} />
                 </div>
-                <Button id="createPost-btn" type="submit">
-                  Create
-                </Button>
+                <Button type="submit" style={{ marginTop: "1em", width: "100%" }}>Publier</Button>
               </Form>
             )}
           </Formik>
-        </div>
-      </div>
+        </Modal.Body>
+      </Modal>
     </div>
   );
 }

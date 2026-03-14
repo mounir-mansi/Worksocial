@@ -41,7 +41,7 @@ export default function LandingScreen() {
           </Col>
           <Col>
             <i className="fas fa-calendar-alt feature-icon" />
-            <Card.Title className="feature-icon">Events</Card.Title>
+            <Card.Title className="feature-icon">Événements</Card.Title>
             <Card.Text>
               Créez des événements et invitez vos amis à y participer. Limitez
               les personnes qui peuvent voir vos événements grâce aux fonctions
@@ -50,7 +50,7 @@ export default function LandingScreen() {
           </Col>
           <Col>
             <i className="fas fa-poll feature-icon" />
-            <Card.Title className="feature-icon">Surveys</Card.Title>
+            <Card.Title className="feature-icon">Sondages</Card.Title>
             <Card.Text>
               Créer des sondages et y participer. Recueillez l'opinion du public
               sur vos idées ou sur tout autre sujet d'actualité.
@@ -67,7 +67,7 @@ export default function LandingScreen() {
         <Row id="chat-features">
           <Col>
             <i className="fas fa-lock feature-icon" />
-            <Card.Title className="feature-icon">Private</Card.Title>
+            <Card.Title className="feature-icon">Privé</Card.Title>
             <Card.Text>
               Vos discussions sont privées et cryptées de bout en bout. Nous
               n'avons pas accès à vos discussions et nous ne les lisons pas.
@@ -75,7 +75,7 @@ export default function LandingScreen() {
           </Col>
           <Col>
             <i className="fas fa-shield feature-icon" />
-            <Card.Title className="feature-icon">Secure</Card.Title>
+            <Card.Title className="feature-icon">Sécurisé</Card.Title>
             <Card.Text>
               Le cryptage de bout en bout garantit que vos chats sont toujours
               sécurisés et protégés contre les intrusions extérieures.
@@ -83,7 +83,7 @@ export default function LandingScreen() {
           </Col>
           <Col>
             <i className="fas fa-gauge-simple-high feature-icon" />
-            <Card.Title className="feature-icon">Ultra Fast</Card.Title>
+            <Card.Title className="feature-icon">Ultra Rapide</Card.Title>
             <Card.Text>
               Nos systèmes de chat sont conçus avec un envoi multiple pour
               garantir des temps de réponse extrêmement rapides.
