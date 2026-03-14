@@ -38,11 +38,19 @@ export default function EventCard({ event, eventComments, eventLikes }) {
   // Mapping Creators
   const eventCreator = users.find((user) => user.User_ID === event.User_ID);
 
-  // Formatage de la date
+  // Formatage de la date et heure
   const formattedStartDate = new Date(event.StartDate).toLocaleDateString(
     "fr-FR",
     { day: "numeric", month: "long", year: "numeric" }
   );
+  const formatTime = (t) => {
+    if (!t) return null;
+    const d = new Date(t);
+    if (Number.isNaN(d.getTime())) return null;
+    return d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+  };
+  const startTime = formatTime(event.StartTime);
+  const endTime = formatTime(event.EndTime);
 
   const commentUserPairs = eventComments.map((cmt) => {
     const commentCreator = users.find(
@@ -265,17 +273,15 @@ export default function EventCard({ event, eventComments, eventLikes }) {
               <span className="action-btn-text">{eventLikes.length}</span>
             </button>
           ) : (
-            <>
-              <button
-                className="action-btn"
-                name="unlike"
-                type="button"
-                onClick={() => handleEventLikeDislike("unlike", currentUserID)}
-              >
-                <i className="fa-solid fa-heart" />
-              </button>
+            <button
+              className="action-btn"
+              name="unlike"
+              type="button"
+              onClick={() => handleEventLikeDislike("unlike", currentUserID)}
+            >
+              <i className="fa-solid fa-heart" />
               <span className="action-btn-text">{eventLikes.length}</span>
-            </>
+            </button>
           )}
           <button
             className="action-btn"
@@ -285,7 +291,9 @@ export default function EventCard({ event, eventComments, eventLikes }) {
             <i className="fa-regular fa-comment" />
           </button>
           <p>
-            Le {formattedStartDate} de {event.StartTime} à {event.EndTime}
+            Le {formattedStartDate}
+            {startTime && ` de ${startTime}`}
+            {endTime && ` à ${endTime}`}
           </p>
 
           <Card.Title>{event.EventName}</Card.Title>

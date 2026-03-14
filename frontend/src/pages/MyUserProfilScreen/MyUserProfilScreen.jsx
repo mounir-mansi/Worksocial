@@ -85,29 +85,28 @@ function MyUserProfilScreen() {
       return;
     }
 
-    const formData = {
-      Username: username,
-      LastName: lastName,
-      FirstName: firstName,
-      BirthDate: birthDate,
-      Age: calculateAge(birthDate).toString(),
-      Address: address,
-      Email: email,
-      Password: password || undefined,
-      Role: "User",
-      Gender: gender,
-      Phone: phone,
-      Biography: biography,
-    };
+    const formData = new FormData();
+    formData.append("Username", username);
+    formData.append("LastName", lastName);
+    formData.append("FirstName", firstName);
+    formData.append("BirthDate", birthDate);
+    formData.append("Age", calculateAge(birthDate).toString());
+    formData.append("Address", address);
+    formData.append("Email", email);
+    if (password) formData.append("Password", password);
+    formData.append("Role", "User");
+    formData.append("Gender", gender);
+    formData.append("Phone", phone);
+    formData.append("Biography", biography);
+    if (values.ProfileImage && values.ProfileImage instanceof File) {
+      formData.append("ProfileImage", values.ProfileImage);
+    }
 
     try {
       const response = await fetch(`${hostname}/users/${userIdLoggedIn}`, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
         credentials: 'include',
-        body: JSON.stringify(formData),
+        body: formData,
       });
 
       if (response.ok) {
@@ -153,6 +152,7 @@ function MyUserProfilScreen() {
     gender: user.Gender || "",
     phone: user.Phone || "",
     biography: user.Biography || "",
+    ProfileImage: null,
   };
 
   const validationSchema = Yup.object().shape({
@@ -283,7 +283,7 @@ function MyUserProfilScreen() {
             onSubmit={handleSubmit}
             enableReinitialize
           >
-            {() => (
+            {({ setFieldValue }) => (
               <Form>
                 <div className="title-content">
                   <label htmlFor="username">Pseudo</label>
@@ -328,6 +328,18 @@ function MyUserProfilScreen() {
                   <label htmlFor="biography">Biographie</label>
                   <Field name="biography" as="textarea" rows="3" className="form-control" />
                   <ErrorMessage name="biography" component="div" className="error" />
+                </div>
+
+                <div className="img-upload">
+                  <label htmlFor="ProfileImageModal">
+                    <i className="fa-solid fa-image" /> Changer la photo de profil
+                  </label>
+                  <input
+                    id="ProfileImageModal"
+                    name="ProfileImage"
+                    type="file"
+                    onChange={(e) => setFieldValue("ProfileImage", e.currentTarget.files[0])}
+                  />
                 </div>
 
                 <hr style={{ margin: "1.5em 0" }} />

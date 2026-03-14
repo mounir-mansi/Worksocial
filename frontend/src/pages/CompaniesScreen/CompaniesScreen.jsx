@@ -90,7 +90,7 @@ export default function CompaniesScreen() {
                   <Field name="URL" placeholder="https://..." type="text" className="form-control" />
                   <div className="img-upload">
                     <label htmlFor="Logo">
-                      <i className="fa-solid fa-image" /> Ajouter un logo
+                      <i className="fa-solid fa-image" /> Ajouter une image
                     </label>
                     <input id="Logo" name="Logo" type="file" onChange={(e) => setFieldValue("Logo", e.currentTarget.files[0])} />
                   </div>
