@@ -53,7 +53,7 @@ router.get("/users", verifyToken, userControllers.getUsers);
 router.get("/users/:id", verifyToken, userControllers.getUserByID);
 
 // Update an existing user
-router.put("/users/:id", verifyOwner, hashPassword, userControllers.updateUser);
+router.put("/users/:id", verifyOwner, upload.single("ProfileImage"), hashPassword, userControllers.updateUser);
 router.put("/updatePassword/:id", verifyToken, hashPassword, userControllers.updatePassword);
 router.get("/logout", verifyToken, userControllers.logout, blacklistToken);
 

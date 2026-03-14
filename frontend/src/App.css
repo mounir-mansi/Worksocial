@@ -84,8 +84,22 @@ code {
 }
 
 .img-upload label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
   margin: 1em 0;
+  padding: 0.4em 1em;
+  border: 1px solid #0d6efd;
+  border-radius: 6px;
+  color: #0d6efd;
   cursor: pointer;
+  font-size: 0.9em;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.img-upload label:hover {
+  background-color: #0d6efd;
+  color: #fff;
 }
 
 .username {
@@ -278,6 +292,10 @@ code {
   font-weight: bold;
   font-size: 0.8em;
   margin: 1em 0;
+}
+
+.react-calendar__month-view__weekdays__weekday abbr {
+  text-decoration: none;
 }
 
 [class*="react-calendar__navigation"] {

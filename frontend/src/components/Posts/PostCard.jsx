@@ -245,17 +245,15 @@ export default function PostCard({ post, postLikes, postComments }) {
               <span className="action-btn-text">{postLikes.length}</span>
             </button>
           ) : (
-            <>
-              <button
-                className="action-btn"
-                name="unlike"
-                type="button"
-                onClick={() => handlePostLikeDislike("unlike", currentUserID)}
-              >
-                <i className="fa-solid fa-heart" />
-              </button>
+            <button
+              className="action-btn"
+              name="unlike"
+              type="button"
+              onClick={() => handlePostLikeDislike("unlike", currentUserID)}
+            >
+              <i className="fa-solid fa-heart" />
               <span className="action-btn-text">{postLikes.length}</span>
-            </>
+            </button>
           )}
           <button
             className="action-btn"

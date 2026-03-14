@@ -1,35 +1,16 @@
 const express = require("express");
-const multer = require("multer");
 
 const router = express.Router();
-
+const upload = require("../middleware/handleUpload");
+const { verifyToken } = require("../middleware/auth");
 const companiesController = require("../controllers/CompaniesController");
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "assets/upload/");
-  },
-  filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`);
-  },
-});
+router.use(verifyToken);
 
-const upload = multer({ storage });
-
-// Create a new company
-router.post(
-  "/company",
-  upload.single("Logo"),
-  companiesController.createCompany
-);
-
-// Get all companies
 router.get("/companies", companiesController.getCompanies);
-
-// Get a specific event by ID
 router.get("/company/:id", companiesController.getCompanyByID);
-
-// // Update an existing company
-// router.put("/company/:id", companiesController.updateCompany);
+router.post("/company", upload.single("Logo"), companiesController.createCompany);
+router.put("/company/:id", upload.single("Logo"), companiesController.updateCompany);
+router.delete("/company/:id", companiesController.deleteCompany);
 
 module.exports = router;

@@ -6,6 +6,7 @@ import "./EditUserProfilScreen.css";
 import Button from "react-bootstrap/Button";
 import UserBar from "../../components/UserBar/UserBar";
 import ImageWithJWT from "../../utils/ImageWithJWT";
+import getImageUrl from "../../utils/getImageUrl";
 
 import { hostname } from "../../HostnameConnect/Hostname";
 
@@ -75,7 +76,7 @@ function EditUserProfilScreen() {
     gender: Yup.string().required("Genre requis"),
     phone: Yup.string().required("Téléphone requis"),
     biography: Yup.string().required("Biographie requise"),
-    ProfileImage: Yup.mixed().required("Image requise"),
+    ProfileImage: Yup.mixed().nullable(),
   });
   const calculateAge = (birthDate) => {
     const birthday = new Date(birthDate);
@@ -106,39 +107,35 @@ function EditUserProfilScreen() {
 
     const age = calculateAge(birthDate);
 
-    const formData = {
-      Username: username,
-      LastName: lastName,
-      FirstName: firstName,
-      BirthDate: birthDate,
-      Age: age.toString(),
-      Address: address,
-      Email: email,
-      Password: password,
-      Role: "User",
-      Gender: gender,
-      Phone: phone,
-      Biography: biography,
-    };
-    console.info("dfqfv", formData);
     if (values.password !== values.passwordConfirmation) {
-      // Affichez un message d'erreur ou effectuez une action appropriée
       console.error("Les mots de passe ne correspondent pas");
       return;
     }
-    // if (ProfileImage && ProfileImage instanceof File) {
-    //   formData.append("ProfileImage", ProfileImage);
-    // }
+
+    const formData = new FormData();
+    formData.append("Username", username);
+    formData.append("LastName", lastName);
+    formData.append("FirstName", firstName);
+    formData.append("BirthDate", birthDate);
+    formData.append("Age", age.toString());
+    formData.append("Address", address);
+    formData.append("Email", email);
+    formData.append("Password", password);
+    formData.append("Role", "User");
+    formData.append("Gender", gender);
+    formData.append("Phone", phone);
+    formData.append("Biography", biography);
+    if (values.ProfileImage && values.ProfileImage instanceof File) {
+      formData.append("ProfileImage", values.ProfileImage);
+    }
+
     try {
       const response = await fetch(
         `${hostname}/users/${userIdLoggedIn}`,
         {
           method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
           credentials: 'include',
-          body: JSON.stringify(formData),
+          body: formData,
         }
       );
 
@@ -183,7 +180,7 @@ function EditUserProfilScreen() {
   if (!user) {
     return <div>Chargement...</div>;
   }
-  const imageUrl = `${hostname}/upload/${user.ProfileImage}`;
+  const imageUrl = getImageUrl(user.ProfileImage);
   return (
     <div className="container">
       <UserBar />
@@ -289,17 +286,17 @@ function EditUserProfilScreen() {
 
                 <ErrorMessage name="gender" component="div" className="error" />
               </div>
-              <div className="form-group">
-                <label htmlFor="ProfileImage">Image de Profil</label>
+              <div className="img-upload">
+                <label htmlFor="ProfileImage">
+                  <i className="fa-solid fa-image" /> Changer la photo de profil
+                </label>
                 <input
                   id="ProfileImage"
                   name="ProfileImage"
                   type="file"
-                  placeholder={user.ProfilImage}
                   onChange={(event) =>
                     setFieldValue("ProfileImage", event.currentTarget.files[0])
                   }
-                  required
                 />
               </div>
               <div className="profileImgDiv">

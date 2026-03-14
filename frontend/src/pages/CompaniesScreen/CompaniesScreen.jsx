@@ -88,8 +88,12 @@ export default function CompaniesScreen() {
                   <Field name="Name" placeholder="Nom de l'entreprise" type="text" className="form-control" />
                   <label htmlFor="URL">Site web</label>
                   <Field name="URL" placeholder="https://..." type="text" className="form-control" />
-                  <label htmlFor="Logo">Logo</label>
-                  <input name="Logo" type="file" onChange={(e) => setFieldValue("Logo", e.currentTarget.files[0])} />
+                  <div className="img-upload">
+                    <label htmlFor="Logo">
+                      <i className="fa-solid fa-image" /> Ajouter un logo
+                    </label>
+                    <input id="Logo" name="Logo" type="file" onChange={(e) => setFieldValue("Logo", e.currentTarget.files[0])} />
+                  </div>
                   <label htmlFor="Phone">Téléphone</label>
                   <Field name="Phone" placeholder="Téléphone" type="text" className="form-control" />
                   <label htmlFor="Email">Email</label>

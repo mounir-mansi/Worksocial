@@ -108,41 +108,33 @@ function InscriptionScreen() {
       return;
     }
 
-    const formData = {
-    "Username": username,
-    "LastName": lastName,
-    "FirstName": firstName,
-    "BirthDate": birthDate,
-    "Age": age.toString(),
-    "Address": address,
-    "Email": email,
-    "Password": password,
-    "Role": "User",
-    "Gender": gender,
-    "Phone": phone,
-    "Biography": biography,
-    "Company_Id": company
-    };
-
-    console.info(formData);
     if (values.password !== values.passwordConfirmation) {
-      // Affichez un message d'erreur ou effectuez une action appropriée
       console.error("Les mots de passe ne correspondent pas");
       return;
     }
+
+    const formData = new FormData();
+    formData.append("Username", username);
+    formData.append("LastName", lastName);
+    formData.append("FirstName", firstName);
+    formData.append("BirthDate", birthDate);
+    formData.append("Age", age.toString());
+    formData.append("Address", address);
+    formData.append("Email", email);
+    formData.append("Password", password);
+    formData.append("Role", "User");
+    formData.append("Gender", gender);
+    formData.append("Phone", phone);
+    formData.append("Biography", biography);
+    formData.append("Company_ID", company);
     if (ProfileImage && ProfileImage instanceof File) {
-      formData["ProfileImage"] = ProfileImage.name;
-      console.info("aaaa", formData);
-    }else{
-        formData["ProfileImage"] = null;
+      formData.append("ProfileImage", ProfileImage);
     }
+
     try {
       const response = await fetch(`${hostname}/users`, {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
+          body: formData,
         });
 
       // Check if the response is OK (status code 200-299)
@@ -198,7 +190,7 @@ function InscriptionScreen() {
             <h2>Inscription</h2>
             <div className="form-group">
               <label htmlFor="username">Pseudo</label>
-              <Field name="username" type="text" />
+              <Field name="username" type="text" className="form-control" />
               <ErrorMessage name="username" component="div" className="error" />
               {usernameError && (
                 <div className="error-message">{usernameError}</div>
@@ -206,72 +198,61 @@ function InscriptionScreen() {
             </div>
             <div className="form-group">
               <label htmlFor="lastName">Nom</label>
-              <Field name="lastName" type="text" />
+              <Field name="lastName" type="text" className="form-control" />
               <ErrorMessage name="lastName" component="div" className="error" />
             </div>
             <div className="form-group">
               <label htmlFor="firstName">Prénom</label>
-              <Field name="firstName" type="text" />
-              <ErrorMessage
-                name="firstName"
-                component="div"
-                className="error"
-              />
+              <Field name="firstName" type="text" className="form-control" />
+              <ErrorMessage name="firstName" component="div" className="error" />
             </div>
             <div className="form-group">
               <label htmlFor="birthDate">Date de Naissance</label>
-              <Field name="birthDate" type="date" />
-              <ErrorMessage
-                name="birthDate"
-                component="div"
-                className="error"
-              />
+              <Field name="birthDate" type="date" className="form-control" />
+              <ErrorMessage name="birthDate" component="div" className="error" />
             </div>
             <div className="form-group">
               <label htmlFor="address">Adresse</label>
-              <Field name="address" type="text" />
+              <Field name="address" type="text" className="form-control" />
               <ErrorMessage name="address" component="div" className="error" />
             </div>
             <div className="form-group">
               <label htmlFor="email">E-mail</label>
-              <Field name="email" type="email" />
+              <Field name="email" type="email" className="form-control" />
               <ErrorMessage name="email" component="div" className="error" />
               {emailError && <div className="error-message">{emailError}</div>}
             </div>
             <div className="form-group">
               <label htmlFor="phone">Téléphone</label>
-              <Field name="phone" type="text" />
+              <Field name="phone" type="text" className="form-control" />
               <ErrorMessage name="phone" component="div" className="error" />
             </div>
             <div className="form-group">
               <label htmlFor="password">Mot de Passe</label>
-              <Field name="password" type="password" />
+              <Field name="password" type="password" className="form-control" />
               <ErrorMessage name="password" component="div" className="error" />
             </div>
             <div className="form-group">
               <label htmlFor="passwordConfirmation">
                 Confirmer le Mot de Passe
               </label>
-              <Field name="passwordConfirmation" type="password" />
-              <ErrorMessage
-                name="passwordConfirmation"
-                component="div"
-                className="error"
-              />
+              <Field name="passwordConfirmation" type="password" className="form-control" />
+              <ErrorMessage name="passwordConfirmation" component="div" className="error" />
             </div>
             <div className="form-group">
               <label htmlFor="gender">Genre</label>
-              <Field name="gender" as="select">
+              <Field name="gender" as="select" className="form-control">
                 <option value="">Sélectionnez un genre</option>
                 <option value="Male">Homme</option>
                 <option value="Female">Femme</option>
                 <option value="Other">Autre</option>
               </Field>
-
               <ErrorMessage name="gender" component="div" className="error" />
             </div>
-            <div className="form-group">
-              <label htmlFor="ProfileImage">Image de Profil</label>
+            <div className="img-upload">
+              <label htmlFor="ProfileImage">
+                <i className="fa-solid fa-image" /> Photo de profil
+              </label>
               <input
                 id="ProfileImage"
                 name="ProfileImage"
@@ -279,23 +260,19 @@ function InscriptionScreen() {
                 onChange={(event) =>
                   setFieldValue("ProfileImage", event.currentTarget.files[0])
                 }
-                required
               />
             </div>
             <div className="form-group">
               <label htmlFor="biography">Biographie</label>
-              <Field name="biography" as="textarea" />
-              <ErrorMessage
-                name="biography"
-                component="div"
-                className="error"
-              />
+              <Field name="biography" as="textarea" className="form-control" />
+              <ErrorMessage name="biography" component="div" className="error" />
             </div>
             <div className="form-group">
               <label htmlFor="company">Société</label>
               <select
                 id="company"
                 name="company"
+                className="form-control"
                 onChange={(event) =>
                   setFieldValue("company", event.target.value)
                 }
