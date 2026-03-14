@@ -80,6 +80,33 @@ const GroupParticipantsRouter = require("./routers/GroupParticipantsRouter");
 const PostCommentLikesRouter = require("./routers/PostCommentLikesRouter");
 const SurveycCommentLikesRouter = require("./routers/SurveycCommentLikesRouter");
 
+// serve REACT APP — avant les routers pour que GET / serve index.html
+const reactIndexFile = path.join(
+  __dirname,
+  "..",
+  "..",
+  "frontend",
+  "dist",
+  "index.html"
+);
+
+if (fs.existsSync(reactIndexFile)) {
+  // Fichiers statiques (JS, CSS, images)
+  app.use(express.static(path.join(__dirname, "..", "..", "frontend", "dist")));
+
+  // Catch-all pour les routes React (navigation browser, pas les appels fetch/API)
+  // Le header Accept du browser contient "text/html", fetch() envoie "*/*"
+  app.get("*", (req, res, next) => {
+    const accept = req.headers.accept || "";
+    if (accept.includes("text/html")) {
+      return res.sendFile(reactIndexFile);
+    }
+    next();
+  });
+}
+
+app.use(express.static(path.join(__dirname, "../public")));
+
 app.use(CompaniesRouter);
 app.use(userRouter);
 app.use(postRouter);
@@ -100,30 +127,6 @@ app.use(GroupChatRouter);
 app.use(GroupParticipantsRouter);
 app.use(PostCommentLikesRouter);
 app.use(SurveycCommentLikesRouter);
-
-app.use(express.static(path.join(__dirname, "../public")));
-
-// serve REACT APP
-const reactIndexFile = path.join(
-  __dirname,
-  "..",
-  "..",
-  "frontend",
-  "dist",
-  "index.html"
-);
-
-if (fs.existsSync(reactIndexFile)) {
-  // serve REACT resources
-
-  app.use(express.static(path.join(__dirname, "..", "..", "frontend", "dist")));
-
-  // redirect all requests to the REACT index file
-
-  app.get("*", (req, res) => {
-    res.sendFile(reactIndexFile);
-  });
-}
 
 // ready to export
 
