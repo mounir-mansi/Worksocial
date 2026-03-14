@@ -20,6 +20,58 @@
   align-items: left;
 }
 
+/* ============================
+   RESPONSIVE — bottom tab bar
+   ============================ */
+@media (max-width: 768px) {
+  .UserBar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    flex-direction: row;
+    background: #fff;
+    border-top: 1px solid #e4e6eb;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.08);
+    padding: 0;
+    z-index: 1000;
+  }
+
+  .NavLinks {
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-around;
+    position: static;
+    gap: 0;
+    padding: 6px 0 4px;
+  }
+
+  .NavLinks li {
+    flex: 1;
+  }
+
+  .NavLinks li a {
+    flex-direction: column;
+    gap: 2px;
+    font-size: 0.65em;
+    color: #65676b;
+    padding: 4px 2px;
+    border-radius: 8px;
+    text-align: center;
+    justify-content: center;
+  }
+
+  .NavLinks li a i {
+    font-size: 1.35em;
+    width: auto;
+  }
+
+  .NavLinks li a:hover {
+    color: #4a4e69;
+    background: #f0f2f5;
+  }
+}
+
 /* Style des liens */
 .NavLinks li a {
   color: #4a4e69;

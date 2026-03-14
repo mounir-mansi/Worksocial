@@ -109,3 +109,25 @@
   padding: 2em 0;
   font-style: italic;
 }
+
+/* ============================
+   RESPONSIVE
+   ============================ */
+@media (max-width: 768px) {
+  .innerContainer {
+    flex-direction: column;
+    gap: 1em;
+  }
+
+  .profilePage-leftSection {
+    min-width: unset;
+    max-width: 100%;
+    width: 100%;
+    position: static;
+  }
+
+  .profilePage-image img {
+    width: 100px;
+    height: 100px;
+  }
+}

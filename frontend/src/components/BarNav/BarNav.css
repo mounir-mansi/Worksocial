@@ -84,3 +84,30 @@
   padding: 0.5em 0.7em;
   border-radius: 8px;
 }
+
+/* ============================
+   RESPONSIVE
+   ============================ */
+@media (max-width: 768px) {
+  .BarNav-loggedIn {
+    padding: 0.4em 0.75em;
+  }
+
+  .today {
+    display: none;
+  }
+
+  .navbar_logo {
+    width: 46px;
+  }
+
+  .NavLinks-BarNav {
+    gap: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .BarNav-loggedOut .NavLinks-BarNav li a span {
+    display: none;
+  }
+}

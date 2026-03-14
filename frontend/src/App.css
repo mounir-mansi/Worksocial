@@ -158,14 +158,75 @@ code {
   object-fit: cover;
 }
 
-.action-btn {
-  margin-right: 0.5em;
-  border: none;
-  background-color: transparent;
-  font-size: 1em;
+/* Facebook-style action bar */
+.card-reactions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 2px;
+  font-size: 0.85em;
+  color: #65676b;
+}
+
+.reaction-likes {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.reaction-likes-icon {
+  background: #1877f2;
+  color: white;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65em;
+}
+
+.reaction-comments {
   cursor: pointer;
-  margin: 1em 0;
-  padding: none;
+}
+
+.reaction-comments:hover {
+  text-decoration: underline;
+}
+
+.card-actions {
+  display: flex;
+  border-top: 1px solid #e4e6eb;
+  padding: 2px 0;
+}
+
+.action-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: none;
+  background: transparent;
+  padding: 8px 4px;
+  border-radius: 6px;
+  font-size: 0.93em;
+  font-weight: 600;
+  color: #65676b;
+  cursor: pointer;
+  transition: background-color 0.12s;
+}
+
+.action-btn:hover {
+  background-color: #f0f2f5;
+}
+
+.action-btn--liked {
+  color: #1877f2;
+}
+
+.action-btn i {
+  font-size: 1.05em;
 }
 
 .action-btn-text {
@@ -310,5 +371,72 @@ code {
   }
   to {
     transform: rotate(360deg);
+  }
+}
+
+/* ============================
+   RESPONSIVE
+   ============================ */
+
+/* Tablet: 769px – 1024px */
+@media (max-width: 1024px) {
+  .container {
+    padding: 5em 1em;
+    gap: 1em;
+  }
+
+  .content-area {
+    width: auto;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .sidebar {
+    width: 180px;
+  }
+}
+
+/* Mobile: ≤ 768px */
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+    padding: 5em 0.75em 5em;
+    gap: 0.75em;
+  }
+
+  .content-area {
+    width: 100%;
+    flex: none;
+  }
+
+  .sidebar {
+    width: 100%;
+    position: static;
+    order: -1;
+  }
+
+  .sidebar .sidebar-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1em;
+  }
+
+  .sidebar .sidebar-item h3 {
+    margin: 0;
+    font-size: 1.1em;
+  }
+
+  .sidebar .create-btn {
+    width: auto !important;
+    margin-bottom: 0;
+  }
+
+  .card-img {
+    height: 220px;
+  }
+
+  .card:hover {
+    transform: none;
   }
 }

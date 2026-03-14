@@ -262,34 +262,35 @@ export default function EventCard({ event, eventComments, eventLikes }) {
           <div className="card-img">
             <ImageWithJWT className="post-img" imageUrl={imageUrl[0]} />
           </div>
-          {!userHasLiked ? (
-            <button
-              className="action-btn"
-              name="like"
-              type="button"
-              onClick={() => handleEventLikeDislike("like", currentUserID)}
-            >
-              <i className="fa-regular fa-heart" /> J'aime
-              {eventLikes.length > 0 && <span className="action-btn-text">{eventLikes.length}</span>}
-            </button>
-          ) : (
-            <button
-              className="action-btn"
-              name="unlike"
-              type="button"
-              onClick={() => handleEventLikeDislike("unlike", currentUserID)}
-            >
-              <i className="fa-solid fa-heart" /> J'aime
-              {eventLikes.length > 0 && <span className="action-btn-text">{eventLikes.length}</span>}
-            </button>
+          {(eventLikes.length > 0 || eventComments.length > 0) && (
+            <div className="card-reactions">
+              {eventLikes.length > 0 && (
+                <span className="reaction-likes">
+                  <span className="reaction-likes-icon"><i className="fa-solid fa-thumbs-up" /></span>
+                  {eventLikes.length}
+                </span>
+              )}
+              {eventComments.length > 0 && (
+                <span className="reaction-comments" onClick={handleOpenCommentModal}>
+                  {eventComments.length} commentaire{eventComments.length > 1 ? "s" : ""}
+                </span>
+              )}
+            </div>
           )}
-          <button
-            className="action-btn"
-            type="button"
-            onClick={handleOpenCommentModal}
-          >
-            <i className="fa-regular fa-comment" />
-          </button>
+          <div className="card-actions">
+            <button
+              className={`action-btn${userHasLiked ? " action-btn--liked" : ""}`}
+              type="button"
+              onClick={() => handleEventLikeDislike(userHasLiked ? "unlike" : "like", currentUserID)}
+            >
+              <i className={`fa-${userHasLiked ? "solid" : "regular"} fa-thumbs-up`} />
+              <span>J&apos;aime</span>
+            </button>
+            <button className="action-btn" type="button" onClick={handleOpenCommentModal}>
+              <i className="fa-regular fa-comment" />
+              <span>Commenter</span>
+            </button>
+          </div>
           <p>
             Le {formattedStartDate}
             {startTime && ` de ${startTime}`}

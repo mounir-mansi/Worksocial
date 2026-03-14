@@ -325,34 +325,35 @@ export default function SurveyCard({
           <div className="card-img">
             <ImageWithJWT imageUrl={imageUrl[0]} />
           </div>
-          {!userHasLiked ? (
-            <button
-              className="action-btn"
-              name="like"
-              type="button"
-              onClick={() => handleSurveyLikeDislike("like", currentUserID)}
-            >
-              <i className="fa-regular fa-heart" /> J'aime
-              {surveyLikes.length > 0 && <span className="action-btn-text">{surveyLikes.length}</span>}
-            </button>
-          ) : (
-            <button
-              className="action-btn"
-              name="unlike"
-              type="button"
-              onClick={() => handleSurveyLikeDislike("unlike", currentUserID)}
-            >
-              <i className="fa-solid fa-heart" /> J'aime
-              {surveyLikes.length > 0 && <span className="action-btn-text">{surveyLikes.length}</span>}
-            </button>
+          {(surveyLikes.length > 0 || surveyComments.length > 0) && (
+            <div className="card-reactions">
+              {surveyLikes.length > 0 && (
+                <span className="reaction-likes">
+                  <span className="reaction-likes-icon"><i className="fa-solid fa-thumbs-up" /></span>
+                  {surveyLikes.length}
+                </span>
+              )}
+              {surveyComments.length > 0 && (
+                <span className="reaction-comments" onClick={handleOpenCommentModal}>
+                  {surveyComments.length} commentaire{surveyComments.length > 1 ? "s" : ""}
+                </span>
+              )}
+            </div>
           )}
-          <button
-            className="action-btn"
-            type="button"
-            onClick={handleOpenCommentModal}
-          >
-            <i className="fa-regular fa-comment" />
-          </button>
+          <div className="card-actions">
+            <button
+              className={`action-btn${userHasLiked ? " action-btn--liked" : ""}`}
+              type="button"
+              onClick={() => handleSurveyLikeDislike(userHasLiked ? "unlike" : "like", currentUserID)}
+            >
+              <i className={`fa-${userHasLiked ? "solid" : "regular"} fa-thumbs-up`} />
+              <span>J&apos;aime</span>
+            </button>
+            <button className="action-btn" type="button" onClick={handleOpenCommentModal}>
+              <i className="fa-regular fa-comment" />
+              <span>Commenter</span>
+            </button>
+          </div>
           <h5 className="card-title">{survey.Title}</h5>
           <p className="card-text">{survey.Content}</p>
           <div className="survey-options">
