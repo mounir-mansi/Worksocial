@@ -55,9 +55,23 @@ const updateUser = async (req, res) => {
       if (old?.ProfileImage) await deleteS3Object(old.ProfileImage);
       ProfileImage = `${process.env.S3_PUBLIC_URL}/${req.file.key}`;
     }
+    const parsedAge = Age ? parseInt(Age, 10) : undefined;
     await prisma.user.update({
       where: { User_ID: id },
-      data: { Username, LastName, FirstName, BirthDate: BirthDate ? new Date(BirthDate) : undefined, Age, Address, Email, Phone, Biography, Role, Gender, ProfileImage },
+      data: {
+        Username: Username || undefined,
+        LastName: LastName || undefined,
+        FirstName: FirstName || undefined,
+        BirthDate: BirthDate ? new Date(BirthDate) : undefined,
+        Age: parsedAge && !Number.isNaN(parsedAge) ? parsedAge : undefined,
+        Address: Address || undefined,
+        Email: Email || undefined,
+        Phone: Phone || undefined,
+        Biography: Biography || undefined,
+        Role: Role || undefined,
+        Gender: Gender || undefined,
+        ProfileImage,
+      },
     });
     res.sendStatus(204);
   } catch (err) {
