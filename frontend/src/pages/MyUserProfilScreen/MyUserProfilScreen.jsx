@@ -159,12 +159,12 @@ function MyUserProfilScreen() {
     username: Yup.string().required("Pseudo requis"),
     lastName: Yup.string().required("Nom requis"),
     firstName: Yup.string().required("Prénom requis"),
-    birthDate: Yup.date().required("Date de naissance requise"),
-    address: Yup.string().required("Adresse requise"),
     email: Yup.string().email("Email invalide").required("Email requis"),
-    gender: Yup.string().required("Genre requis"),
-    phone: Yup.string().required("Téléphone requis"),
-    biography: Yup.string().required("Biographie requise"),
+    birthDate: Yup.date().nullable(),
+    address: Yup.string().nullable(),
+    gender: Yup.string().nullable(),
+    phone: Yup.string().nullable(),
+    biography: Yup.string().nullable(),
   });
 
   return (
@@ -306,15 +306,12 @@ function MyUserProfilScreen() {
 
                   <label htmlFor="phone">Téléphone</label>
                   <Field name="phone" type="text" className="form-control" />
-                  <ErrorMessage name="phone" component="div" className="error" />
 
                   <label htmlFor="birthDate">Date de naissance</label>
                   <Field name="birthDate" type="date" className="form-control" />
-                  <ErrorMessage name="birthDate" component="div" className="error" />
 
                   <label htmlFor="address">Adresse</label>
                   <Field name="address" type="text" className="form-control" />
-                  <ErrorMessage name="address" component="div" className="error" />
 
                   <label htmlFor="gender">Genre</label>
                   <Field name="gender" as="select" className="form-control">
@@ -323,11 +320,9 @@ function MyUserProfilScreen() {
                     <option value="Female">Femme</option>
                     <option value="Other">Autre</option>
                   </Field>
-                  <ErrorMessage name="gender" component="div" className="error" />
 
                   <label htmlFor="biography">Biographie</label>
                   <Field name="biography" as="textarea" rows="3" className="form-control" />
-                  <ErrorMessage name="biography" component="div" className="error" />
                 </div>
 
                 <div className="img-upload">
@@ -347,10 +342,10 @@ function MyUserProfilScreen() {
 
                 <div className="title-content">
                   <label htmlFor="password">Nouveau mot de passe</label>
-                  <Field name="password" type="password" className="form-control" />
+                  <Field name="password" type="password" className="form-control" autoComplete="new-password" />
 
                   <label htmlFor="passwordConfirmation">Confirmer le mot de passe</label>
-                  <Field name="passwordConfirmation" type="password" className="form-control" />
+                  <Field name="passwordConfirmation" type="password" className="form-control" autoComplete="new-password" />
                 </div>
 
                 <Button type="submit" style={{ marginTop: "1em", width: "100%" }}>

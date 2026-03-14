@@ -21,54 +21,44 @@
 }
 
 /* ============================
-   RESPONSIVE — bottom tab bar
+   RESPONSIVE — barre horizontale en haut
    ============================ */
 @media (max-width: 768px) {
   .UserBar {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
     flex-direction: row;
-    background: #fff;
-    border-top: 1px solid #e4e6eb;
-    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.08);
-    padding: 0;
-    z-index: 1000;
+    width: 100%;
   }
 
   .NavLinks {
     flex-direction: row;
     width: 100%;
-    justify-content: space-around;
+    overflow-x: auto;
     position: static;
-    gap: 0;
-    padding: 6px 0 4px;
+    gap: 4px;
+    padding: 0.5em 0;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .NavLinks::-webkit-scrollbar {
+    display: none;
   }
 
   .NavLinks li {
-    flex: 1;
+    flex-shrink: 0;
   }
 
   .NavLinks li a {
-    flex-direction: column;
-    gap: 2px;
-    font-size: 0.65em;
-    color: #65676b;
-    padding: 4px 2px;
-    border-radius: 8px;
-    text-align: center;
-    justify-content: center;
-  }
-
-  .NavLinks li a i {
-    font-size: 1.35em;
-    width: auto;
+    font-size: 0.85em;
+    padding: 6px 12px;
+    border-radius: 20px;
+    background: #f0f2f5;
+    white-space: nowrap;
   }
 
   .NavLinks li a:hover {
+    background: #e4e6eb;
     color: #4a4e69;
-    background: #f0f2f5;
   }
 }
 
