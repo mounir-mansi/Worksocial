@@ -269,7 +269,7 @@ export default function EventCard({ event, eventComments, eventLikes }) {
               type="button"
               onClick={() => handleEventLikeDislike("like", currentUserID)}
             >
-              <i className="fa-regular fa-heart" />
+              <i className="fa-regular fa-heart" /> J'aime
               {eventLikes.length > 0 && <span className="action-btn-text">{eventLikes.length}</span>}
             </button>
           ) : (
@@ -279,7 +279,7 @@ export default function EventCard({ event, eventComments, eventLikes }) {
               type="button"
               onClick={() => handleEventLikeDislike("unlike", currentUserID)}
             >
-              <i className="fa-solid fa-heart" />
+              <i className="fa-solid fa-heart" /> J'aime
               {eventLikes.length > 0 && <span className="action-btn-text">{eventLikes.length}</span>}
             </button>
           )}

@@ -332,7 +332,7 @@ export default function SurveyCard({
               type="button"
               onClick={() => handleSurveyLikeDislike("like", currentUserID)}
             >
-              <i className="fa-regular fa-heart" />
+              <i className="fa-regular fa-heart" /> J'aime
               {surveyLikes.length > 0 && <span className="action-btn-text">{surveyLikes.length}</span>}
             </button>
           ) : (
@@ -342,7 +342,7 @@ export default function SurveyCard({
               type="button"
               onClick={() => handleSurveyLikeDislike("unlike", currentUserID)}
             >
-              <i className="fa-solid fa-heart" />
+              <i className="fa-solid fa-heart" /> J'aime
               {surveyLikes.length > 0 && <span className="action-btn-text">{surveyLikes.length}</span>}
             </button>
           )}
