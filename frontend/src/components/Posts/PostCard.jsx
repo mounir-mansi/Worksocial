@@ -242,7 +242,7 @@ export default function PostCard({ post, postLikes, postComments }) {
               onClick={() => handlePostLikeDislike("like", currentUserID)}
             >
               <i className="fa-regular fa-heart" />
-              <span className="action-btn-text">{postLikes.length}</span>
+              {postLikes.length > 0 && <span className="action-btn-text">{postLikes.length}</span>}
             </button>
           ) : (
             <button
@@ -252,7 +252,7 @@ export default function PostCard({ post, postLikes, postComments }) {
               onClick={() => handlePostLikeDislike("unlike", currentUserID)}
             >
               <i className="fa-solid fa-heart" />
-              <span className="action-btn-text">{postLikes.length}</span>
+              {postLikes.length > 0 && <span className="action-btn-text">{postLikes.length}</span>}
             </button>
           )}
           <button
