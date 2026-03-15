@@ -36,7 +36,7 @@ export default function LandingScreen() {
             <Card.Text>
               Lisez les messages et les mises à jour de vos contacts et comment
               ils améliorent leur vie professionnelle. Partagez les créant un
-              article !
+              article&nbsp;!
             </Card.Text>
           </Col>
           <Col xs={12} md={4}>
