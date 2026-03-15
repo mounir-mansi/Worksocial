@@ -42,7 +42,9 @@ export default function BarNav() {
       {isLoggedIn ? (
         <nav className="BarNav-loggedIn">
           <div className="logo">
-            <img src={Logo} alt="logo" className="navbar_logo" />
+            <Link to="/dashboard">
+              <img src={Logo} alt="logo" className="navbar_logo" />
+            </Link>
           </div>
           <ul className="NavLinks-BarNav">
             <span className="today">{today}</span>
@@ -59,7 +61,9 @@ export default function BarNav() {
       ) : (
         <nav className="BarNav-loggedOut">
           <div className="logo">
-            <img src={Logo} alt="logo" className="navbar_logo" />
+            <Link to="/">
+              <img src={Logo} alt="logo" className="navbar_logo" />
+            </Link>
           </div>
           <ul className="NavLinks-BarNav landing-links">
             <li>

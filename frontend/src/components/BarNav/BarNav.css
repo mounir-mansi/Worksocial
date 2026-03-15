@@ -3,11 +3,13 @@
   justify-content: space-between;
   align-items: center;
   background-color: #4a4e69;
+  padding: 0.5em 1em;
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   z-index: 101;
+  box-sizing: border-box;
 }
 
 .BarNav-loggedOut {
@@ -34,7 +36,10 @@
 }
 
 .navbar_logo {
-  width: 60px;
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  border-radius: 8px;
 }
 
 /* Style de la liste de liens */
@@ -98,7 +103,8 @@
   }
 
   .navbar_logo {
-    width: 46px;
+    width: 36px;
+    height: 36px;
   }
 
   .NavLinks-BarNav {
