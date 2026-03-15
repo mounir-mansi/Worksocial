@@ -53,48 +53,10 @@
 }
 
 /* ============================
-   RESPONSIVE — barre horizontale en haut (mobile)
+   RESPONSIVE — cachée sur mobile (nav dans le dropdown)
    ============================ */
 @media (max-width: 768px) {
   .UserBar {
-    flex-direction: row;
-    width: 100%;
-    order: -10;
-    border-bottom: 1px solid #e4e6eb;
-    padding: 0 0.25em;
-    margin-bottom: 0.25em;
-  }
-
-  .NavLinks {
-    flex-direction: row;
-    width: 100%;
-    overflow-x: auto;
-    position: static;
-    gap: 4px;
-    padding: 0.5em 0;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-  }
-
-  .NavLinks::-webkit-scrollbar {
     display: none;
-  }
-
-  .NavLinks li {
-    flex-shrink: 0;
-  }
-
-  .NavLinks li a {
-    font-size: 0.85em;
-    padding: 6px 12px;
-    border-radius: 20px;
-    background: #f0f2f5;
-    white-space: nowrap;
-    gap: 6px;
-  }
-
-  .NavLinks li a:hover {
-    background: #e4e6eb;
-    color: #4a4e69;
   }
 }

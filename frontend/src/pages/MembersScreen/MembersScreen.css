@@ -39,10 +39,6 @@
 
 @media (max-width: 576px) {
   .userlist {
-    grid-template-columns: repeat(2, 1fr);
-    justify-items: center;
-  }
-  .user-card {
-    width: 100%;
+    grid-template-columns: 1fr;
   }
 }

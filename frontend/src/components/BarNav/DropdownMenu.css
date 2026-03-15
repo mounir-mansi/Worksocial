@@ -3,7 +3,20 @@
 }
 
 .custom-dropdown-menu .dropdown-item:hover {
-  color: black; /* Keeps text color black even on hover */
-  background-color: #f8f9fa; /* Optional: Change background color on hover */
+  color: black;
+  background-color: #f8f9fa;
+}
+
+/* Nav links dans le dropdown — visibles seulement sur mobile */
+.mobile-nav-item,
+.mobile-nav-divider {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .mobile-nav-item,
+  .mobile-nav-divider {
+    display: block;
+  }
 }
 

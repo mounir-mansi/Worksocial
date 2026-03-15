@@ -14,6 +14,26 @@ function DropdownMenu({ userName, onLogout }) {
         <LinkContainer to={`/profile/${userId}`}>
           <Dropdown.Item>Profil</Dropdown.Item>
         </LinkContainer>
+        <Dropdown.Divider className="mobile-nav-divider" />
+        <LinkContainer to="/dashboard" className="mobile-nav-item">
+          <Dropdown.Item><i className="fas fa-home" /> Accueil</Dropdown.Item>
+        </LinkContainer>
+        <LinkContainer to="/posts" className="mobile-nav-item">
+          <Dropdown.Item><i className="fas fa-edit" /> Postes</Dropdown.Item>
+        </LinkContainer>
+        <LinkContainer to="/surveys" className="mobile-nav-item">
+          <Dropdown.Item><i className="fas fa-poll" /> Sondages</Dropdown.Item>
+        </LinkContainer>
+        <LinkContainer to="/events" className="mobile-nav-item">
+          <Dropdown.Item><i className="fas fa-calendar-alt" /> Événements</Dropdown.Item>
+        </LinkContainer>
+        <LinkContainer to="/members" className="mobile-nav-item">
+          <Dropdown.Item><i className="fas fa-users" /> Membres</Dropdown.Item>
+        </LinkContainer>
+        <LinkContainer to="/companies" className="mobile-nav-item">
+          <Dropdown.Item><i className="fas fa-building" /> Entreprises</Dropdown.Item>
+        </LinkContainer>
+        <Dropdown.Divider />
         <Dropdown.Item onClick={onLogout}>Déconnexion</Dropdown.Item>
       </Dropdown.Menu>
     </Dropdown>
