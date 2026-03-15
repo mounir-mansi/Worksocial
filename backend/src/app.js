@@ -110,8 +110,8 @@ if (fs.existsSync(reactIndexFile)) {
 
 app.use(express.static(path.join(__dirname, "../public")));
 
-app.use(CompaniesRouter);
 app.use(userRouter);
+app.use(CompaniesRouter);
 app.use(postRouter);
 app.use(eventRouter);
 app.use(surveyRouter);
