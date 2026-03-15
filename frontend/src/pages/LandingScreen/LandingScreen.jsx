@@ -30,7 +30,7 @@ export default function LandingScreen() {
       </section>
       <div id="features" className="centered-text">
         <Row>
-          <Col>
+          <Col xs={12} md={4}>
             <i className="fas fa-edit feature-icon" />
             <Card.Title className="feature-icon">Postes</Card.Title>
             <Card.Text>
@@ -39,7 +39,7 @@ export default function LandingScreen() {
               article !
             </Card.Text>
           </Col>
-          <Col>
+          <Col xs={12} md={4}>
             <i className="fas fa-calendar-alt feature-icon" />
             <Card.Title className="feature-icon">Événements</Card.Title>
             <Card.Text>
@@ -48,7 +48,7 @@ export default function LandingScreen() {
               de confidentialité.
             </Card.Text>
           </Col>
-          <Col>
+          <Col xs={12} md={4}>
             <i className="fas fa-poll feature-icon" />
             <Card.Title className="feature-icon">Sondages</Card.Title>
             <Card.Text>
@@ -65,7 +65,7 @@ export default function LandingScreen() {
           est aussi facile que de prendre son petit-déjeuner le matin.
         </p>
         <Row id="chat-features">
-          <Col>
+          <Col xs={12} md={4}>
             <i className="fas fa-lock feature-icon" />
             <Card.Title className="feature-icon">Privé</Card.Title>
             <Card.Text>
@@ -73,7 +73,7 @@ export default function LandingScreen() {
               n'avons pas accès à vos discussions et nous ne les lisons pas.
             </Card.Text>
           </Col>
-          <Col>
+          <Col xs={12} md={4}>
             <i className="fas fa-shield feature-icon" />
             <Card.Title className="feature-icon">Sécurisé</Card.Title>
             <Card.Text>
@@ -81,7 +81,7 @@ export default function LandingScreen() {
               sécurisés et protégés contre les intrusions extérieures.
             </Card.Text>
           </Col>
-          <Col>
+          <Col xs={12} md={4}>
             <i className="fas fa-gauge-simple-high feature-icon" />
             <Card.Title className="feature-icon">Ultra Rapide</Card.Title>
             <Card.Text>

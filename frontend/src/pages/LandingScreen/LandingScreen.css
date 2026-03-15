@@ -90,3 +90,84 @@ footer {
   width: 80px;
   margin: 1em 0;
 }
+
+/* ============================
+   RESPONSIVE MOBILE
+   ============================ */
+@media (max-width: 768px) {
+  .landing {
+    overflow-x: hidden;
+    padding: 5em 0 0 0;
+  }
+
+  #hero {
+    padding: 0 1em;
+    text-align: left;
+  }
+
+  #hero-title {
+    font-size: 2em;
+    text-align: left;
+  }
+
+  #hero-text {
+    font-size: 1.1em;
+    text-align: justify;
+  }
+
+  #hero-image {
+    width: 100%;
+  }
+
+  #features {
+    width: 100%;
+    margin: -8em 0 0 0;
+    padding: 10em 1em 3em 1em;
+    box-sizing: border-box;
+  }
+
+  #features .row > div {
+    margin-bottom: 2em;
+    text-align: left;
+  }
+
+  #features .row > div p {
+    text-align: justify;
+  }
+
+  #chat {
+    margin: 3em 0;
+    padding: 0 1em;
+    box-sizing: border-box;
+    width: 100%;
+    text-align: left;
+  }
+
+  #features-title {
+    font-size: 1.5em;
+    text-align: left;
+  }
+
+  #chat > p {
+    text-align: justify;
+  }
+
+  #chat-features {
+    margin: 1em 0;
+  }
+
+  #chat-features .row > div,
+  #chat-features > div {
+    margin-bottom: 2em;
+    text-align: left;
+  }
+
+  #chat-features .row > div p,
+  #chat-features > div p {
+    text-align: justify;
+  }
+
+  footer {
+    padding: 1.5em 1em 0 1em;
+  }
+}
