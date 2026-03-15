@@ -49,7 +49,7 @@ function UserCard({ user, onOpenChat, onCloseChat, chatPosition }) {
           <h2>
             {user.FirstName} {user.LastName}
           </h2>
-          <p>{user.Role}</p>
+          <p>{{ User: "Utilisateur", Admin: "Administrateur" }[user.Role] ?? user.Role}</p>
         </div>
         <div className="user-footer">
           {userCompany && (

@@ -110,6 +110,14 @@
   font-style: italic;
 }
 
+/* Tabs Bootstrap — 3 tabs sur une ligne */
+@media (max-width: 768px) {
+  .nav-tabs .nav-link {
+    font-size: 0.8em;
+    padding: 0.4em 0.6em;
+  }
+}
+
 /* ============================
    RESPONSIVE
    ============================ */
