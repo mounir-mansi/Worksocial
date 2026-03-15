@@ -132,6 +132,12 @@
     max-width: 100%;
     width: 100%;
     position: static;
+    padding: 1em 0.5em;
+  }
+
+  .profilePage-rightSection {
+    width: 100%;
+    flex: none;
   }
 
   .profilePage-image img {

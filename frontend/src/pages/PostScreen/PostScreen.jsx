@@ -81,7 +81,7 @@ export default function PostScreen() {
       </div>
       <div className="sidebar">
         <div className="sidebar-item">
-          <h3>Posts</h3>
+          <h3>Postes</h3>
           <Button onClick={() => setShowModal(true)} style={{ width: "100%" }}>
             <i className="fas fa-plus" /> Nouveau post
           </Button>

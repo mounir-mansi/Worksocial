@@ -229,7 +229,7 @@ function MyUserProfilScreen() {
         {/* Panel droit — tabs avec contenu */}
         <div className="profilePage-rightSection">
           <Tabs defaultActiveKey="posts" className="mb-3" fill>
-            <Tab eventKey="posts" title={`Posts (${userPosts.length})`}>
+            <Tab eventKey="posts" title={`Postes (${userPosts.length})`}>
               {userPosts.length === 0 ? (
                 <p className="empty-tab">Aucun poste pour l'instant.</p>
               ) : (
